@@ -1,0 +1,201 @@
+% The subglacial landscape and hydrology of Antarctica as mapped from space
+
+\section{Motivation}
+
+What is the rate at which sea level will rise and affect coastal communities around the globe?
+Besides greenhouse gas emissions, a large uncertainty in the answer to that question lies in the Antarctic ice sheet's behaviour.
+By 2100, Antarctica is projected to contribute as little as \SI{0.03}{\metre} to as much as \SI{0.28}{\metre} sea level equivalent (\gls{SLE}) of water under a high emissions scenario \citep[RCP 8.5, Fig.~\ref{fig:0}f,][]{PortnerSummaryPolicymakers2019}.
+To narrow the range of this projection, one of the regions we need to understand is Antarctica's bed, the part hidden under the ice.
+This thesis synthesizes a collection of satellite remote sensing methods, using what we can see at the surface of the Antarctic continent, to deduce what is happening in the subglacial world below.
+
+\begin{figure}[htbp]
+  \includegraphics[width=1.0\textwidth]{chp1_fig_SROCC_SPM1_Final_edit_AA-1.jpg}
+  \caption[Cryospheric contribution to sea level change by 2100]{
+    Contribution of the cryosphere to sea level change.
+    Modelled and observed historical changes in the cryosphere since 1950, and the projected future changes under low (RCP2.6) and high (RCP8.5) greenhouse gas emissions scenarios.
+    Figure adapted from SPM.1 in the Summary for Policy Makers, \gls{IPCC} Special Report on the Ocean and Cryosphere in a Changing Climate \citep{PortnerSummaryPolicymakers2019}.
+  }
+  \label{fig:0}
+\end{figure}
+
+\section{Thesis context}
+
+Antarctica is a large continent, $53\times$ the size of New Zealand or $1.8\times$ the size of Australia, and satellite measurements are one of the best ways to cover the whole icescape.
+While the first satellite images of Antarctica were taken in 1964 by the Nimbus I satellite \citep{MeierNewestimatesArctic2013}, continuous modern-day observations only started in 1979.
+Forty years later, and there is now a wealth of openly available optical images of much of the continent, currently captured by NASA's Landsat 8 \citep[][]{RoyLandsat8Scienceproduct2014} and the European Space Agency (ESA)'s Sentinel 2 \citep{DruschSentinel2ESAOptical2012}.
+Changes to Antarctica's mass can be measured at kilometre-scale using the Gravity Recovery and Climate Experiment Follow‐On (GRACE‐FO, 2018-) satellites \citep{LandererExtendingGlobalMass2020}, and at metre-scales using the Ice, Cloud and land Elevation Satellite-2 \citep[ICESat-2, 2018-;][]{MarkusIceCloudland2017}.
+Also with radar instruments like Sentinel 1 \citep{AttemaSentinel1missionoverview2009} and Cryosat 2 \citep{WinghamCryoSatmissiondetermine2006}, cloud-free monitoring of the Antarctic surface has never been easier.
+Sadly, most of these satellites can only observe the surface of the Antarctic continent.
+There are physical constraints on designing an Earth orbiting satellite which can penetrate through both the atmosphere and kilometres of ice \citep{GogineniCubeSatTrainRadar2018,CulbergFirnClutterConstraints2020}.
+Arguably more is known about the subglacial landscape of Mars's polar caps \citep{OroseiRadarevidencesubglacial2018,ArnoldModeledSubglacialWater2019,LauroMultiplesubglacialwater2020} than that of our own planet Earth.
+Still, it is possible to infer about Antarctica's bed properties by combining satellite observations captured over large surface areas with what little is known about the bed at discrete sites targeted by oversnow observations, and this is the approach this thesis will take.
+
+\subsection{Research Questions}
+
+To better understand the drivers of Antarctic ice flow, we present high spatial resolution ($<= \SI{250}{\metre}$) views of Antarctica's subglacial geography, as inferred from satellite detected ice surface changes.
+Novel machine learning and automated remote sensing techniques are applied to infer both the subglacial landscape and subglacial hydrological network of Antarctica.
+The 3 main research questions are as follows:
+
+\begin{enumerate}
+  \item How can we integrate existing high spatial resolution remote sensing products to boost the resolution of existing bed elevation maps of Antarctica?
+
+  \item What effect does a rough surface, high-resolution (\SI{250}{\metre}) bed topography have on the friction parameters of an ice sheet model?
+
+  \item Where does water drain and accumulate underneath the Antarctic Ice Sheet, how much volume is mobilized, and at what timescales do these processes occur?
+\end{enumerate}
+
+The products of this thesis will be a revised continent-wide map of Antarctica's bed topography and subglacial hydrology, including a revised inventory of active subglacial lakes.
+Building on top of this, are regional-scale derived products of basal friction and a time-series of ice volume displacement analyzed at select drainage basins.
+Taken together, these datasets form a foundation enabling accurate modelling of overland ice flow.
+
+\subsection{Outline}
+
+This thesis is comprised of five chapters.
+
+Chapter 1 establishes the context behind this research, the three research questions, and also the outline you are reading now.
+It also contains an introduction to the influence of subglacial topography and subglacial hydrology on ice flow.
+
+Chapter 2 is adapted from a journal paper submitted to The Cryosphere \citep{LeongDeepBedMapdeepneural2020}, reformatted to fit in this thesis.
+It starts with an introduction to the field of deep learning in the context of geospatial science.
+The chapter then provides a detailed look into the construction of a convolutional neural network architecture to generate a super-resolution (\SI{250}{\metre}) bed elevation map of Antarctica from a low resolution (\SI{1000}{\metre}) BEDMAP2 input and other remote sensing observations of the ice surface.
+
+Chapter 3 uses the neural network generated super-resolution Antarctic bed elevation map to perform an ice sheet model basal inversion over Pine Island Glacier.
+In this chapter, we examine the inverted properties of basal drag, effective pressure and friction coefficient using two bed elevation models of different spatial resolutions.
+The output of this exercise is to analyze the effects of using a rougher bed on ice flow modelling.
+
+Chapter 4 looks into the active subglacial hydrology system of Antarctica using ICESat-2 laser altimetry.
+A revised and automated method for building an active subglacial lake inventory is described, with details on the timing of subglacial lake drainage and filling events, and the estimated volume of water exchanged.
+The increased spatiotemporal resolution of these subglacial hydrological maps, combined with an improved subglacial topography, is used to examine the drivers of Antarctic ice flow.
+
+Chapter 5 provides a discussion of the 3 research questions, and implications for future work.
+It also presents the main conclusions of this thesis.
+
+
+\section{Background}
+
+Glaciers and ice sheets move in three main ways:
+1) internal deformation of the ice due to gravity
+2) sliding of the ice over the basal substrate
+3) deformation of the basal substrate.
+
+The latter two processes can be collectively termed as basal slip \citep{Cuffeyphysicsglaciers2010}.
+While the bed topography of Antarctica can change significantly over geological time \citep[e.g.][]{HochmuthEvolvingPaleobathymetryCircum2020}, the amount of water available to slide a glacier is more dynamic and can act on sub-annual to annual timescales \citep[e.g.][]{SiegfriedEpisodicicevelocity2016}.
+Much focus has been placed on the importance of subglacial water on ice dynamics, such as the draining and filling of subglacial lakes \citep[e.g.][]{Smithinventoryactivesubglacial2009,SiegfriedThirteenyearssubglacial2018} and glacial surges due to rainfall events \citep[e.g.][]{IkenUpliftUnteraargletscherBeginning1983}.
+Another contributor is the structure of the basal topography that exerts a drag on the ice-rock contact surface \citep[e.g.][]{Kyrke-SmithRelevanceDetailBasal2018}.
+The base of the ice sheet is difficult to observe, as they require oversnow seismic or radar surveys \citep[e.g.][]{HolschuhLinkingpostglaciallandscapes2020} or direct drilling access \citep[e.g.][]{TulaczykWISSARDSubglacialLake2014}.
+In contrast, the surface of the ice sheet can be more readily examined using satellites and other remote sensing instruments \citep[e.g.][]{HowatReferenceElevationModel2019,MouginotContinentWideInterferometric2019}.
+The study of basal slip at local to regional scales, from sliding due to water and bed deformation, varies with specific conditions at the bed, and can be posed as a geographical question:  % thesis statement
+1) Where in Antarctica does bed topography not have an important control on ice flow (i.e. water is more important).
+2) Where in Antarctica does bed topography have an important control on ice flow (i.e. a better bed is needed).
+
+To answer this question, we first require an accurate geographic model of the bed, a Digital Elevation Model with sufficient fine-scale structures \citep[Chp.~\ref{ch:2},][]{LeongDeepBedMapdeepneural2020}. Current generations of Antarctic bed elevation models such as BEDMAP2 \citep{FretwellBedmap2improvedice2013} are overly smooth by necessity.
+BEDMAP2 is derived from Radio-echo sounding (\gls{RES}) observations, the data was interpolated to a 5 km grid, and then to a 1 km grid.
+BedMachine Antarctica \citep{MorlighemMEaSUREsBedMachineAntarctica2020} is generated by mass conservation and is also smoothed in such a way that fails to capture the inherent sub-kilometre scale roughness of an ice sheet's topograhy as seen in paleo-ice sheets uncovered in the modern day.
+
+% TODO make into horizontal plot perhaps
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[t]{0.65\textwidth}
+    % TODO get DeepBedMap figure with ground-truth instead of groundtruth
+    \includegraphics[width=1.0\textwidth]{chp2_fig6_elevation_roughness_transect}
+    \label{fig:1.2a}
+  \end{subfigure}
+  \vfill
+  \begin{subfigure}[t]{0.65\textwidth}
+    \includegraphics[width=1.0\textwidth]{chp1_fig_essd-12-2765-2020-f06}
+    \label{fig:1.2b}
+  \end{subfigure}
+  \caption[Comparison of bed elevation products along ground-truth transects]{
+    Comparing \gls{RES} bed elevation measurements against different bed products along transect lines in Antarctica.
+    % TODO ref{chp:}
+    Top panel is over Thwaites Glacier, showing super resolution DeepBedMap\_DEM \citep[purple;][]{LeongDeepBedMapdeepneural2020}, Ground-truth Operation IceBridge \gls{RES} points \citep[orange;][]{ShiMultichannelCoherentRadar2010} and BedMachine Antarctica \citep[green;][]{MorlighemDeepglacialtroughs2019}.
+    Bottom panel is over Princess Elizabeth Land, showing ICECAP2 \gls{RES} transects (black), BEDMAP2 (blue), BedMachine (red), and ICECAP2 DEM (green) \citep[Fig. 6 from][, licensed under \href{https://creativecommons.org/licenses/by/4.0}{CC-BY-4.0}]{CuiBedtopographyPrincess2020}.
+  }
+  \label{fig:1.2}
+\end{figure}
+
+The smoothness of existing interpolated bed topography products at the sub-kilometre scale is evident when looking along a transect profile.
+In Fig.~\ref{fig:1.2}, we show how fine scale roughness exists in ground-truth radio-echo sounding (\gls{RES}) bed picks.
+Continent-wide bed elevation products like BEDMAP2 and BedMachine Antarctica fail to capture this roughness.
+Newer regional products over the Weddell Sea sector \citep{Jeofrynewbedelevation2018} and Princess Elizabeth Land \citep{CuiBedtopographyPrincess2020} provide more accurate interpolated bed elevations but are still unable to resolve short-wavelength bed roughness.
+Thus, we require a method applicable to the entire continent that retains fine-scale (sub-kilometre) roughness critical for modelling ice flow \citep[see e.g.][]{HubbardSpectralroughnessglaciated2000,SiegertMacroscalebedroughness2004,BinghamDiverselandscapesPine2017,FalciniQuantifyingbedroughness2018}
+
+One way to improve on smooth bed topographies is by using deep learning \citep[see][for a review]{GoodfellowDeeplearning2016}.
+Specifically, training a neural network on areas with high resolution datasets, and using it to predict what a high resolution topography would look like in areas with little to no direct observations \citep[Chp.~\ref{ch:2},][]{LeongDeepBedMapdeepneural2020}.
+Our deep learning method has similarities with inverse methods \citep{GudmundssonInverseMethodsGlaciology2011}, whereby knowing ice surface elevation, velocity, surface accummulation, and other surface observations in detail allows us to infer what the bed topography might be like.
+In contrast to inverse methods, we introduced a specific adversarial loss function \citep{GoodfellowGenerativeAdversarialNetworks2014} that penalizes overtly smooth topography, pushing bed predictions towards that of realistic groundtruth surfaces.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\textwidth]{chp1_fig_universal_glacier_slip_law.jpg}
+  \caption[Universal glacier slip law]{
+    A universal glacier slip law spanning the spectrum of form drag and skin drag regimes.
+    Figure is from \citet{Minchewuniversalglacierslip2020}.
+    Reprinted with permission from AAAS.
+  }
+  \label{fig:1.3}
+\end{figure}
+
+With the DeepBedMap dataset, we then experiment how ice flow over a rough surface differs from ice flow over smooth topography (Chp.~\ref{ch:3}).
+Two beds are compared using a Full Stokes ice flow model - a full physical treatment of how an ice stream flows, including the three-dimensional driving forces and stresses that govern the behaviour of an ice body \citep{LarourContinentalscalehigh2012}.
+% In addition, we also analyze how water may flow differently over a rough versus smooth topography, whether that has any effect on hydropotential gradients, which may influence basal water pressure at the base of ice streams and thus change ice flow.
+% This is crucial to get right, as whether water flows as a concentrated stream in a channel or as a distributed network has a major impact on the ice flowing above it.
+One outcome of this exercise is to measure the basal traction of an ice stream, separable into form drag and skin drag \citep[Fig.~\ref{fig:1.3},][]{BinghamDiverselandscapesPine2017,Kyrke-SmithRelevanceDetailBasal2018,Minchewuniversalglacierslip2020,SchoofBasalperturbationsice2002}.
+Form drag is basal drag due to topography \citep[c.f.][]{WeertmanSlidingGlaciers1957}, a component which typically increases with higher resolution topography.
+Skin drag is the frictional force occurring at the ice-rock interface, determined by bed material properties, and significantly influenced by water that acts to decrease friction \citep{IversonExperimentsdynamicssedimentary2015}.
+Skin drag may be overestimated in comparison to form drag on glaciers such as Pine Island Glacier \citep{BinghamDiverselandscapesPine2017,Kyrke-SmithRelevanceDetailBasal2018}, and this detail is of particular relevance when modelling vulnerable glaciers in the Amundsen sea sector \citep{Kyrke-SmithRelevanceDetailBasal2018}.
+% TODO explain or throw out. Moreover, it beckons the question on whether basal inversion have been correctly applied to other regions in Antarctica.
+
+% Basal traction itself is normally an inferred property of the bed, and is a standard product produced by ice sheet models where given an ice surface elevation with a known velocity, as well as a bed elevation, we can invert for what basal traction is necessary to produce a desired velocity.
+% What is hard to separate out, is the true contribution or division of form drag and skin drag into the basal traction parameter.
+
+Regardless of the nature of subglacial topography, water remains important in determining ice flow.
+Water beneath an ice sheet is dynamic, and has been shown to affect the speed of mountain glaciers \citep[e.g.][]{IkenUpliftUnteraargletscherBeginning1983}, and that of outlet glaciers in Greenland where surface water has the ability to access the bed via moulins \citep{ZwallySurfaceMeltInducedAcceleration2002}.
+While no active moulins are known to be present in the interior regions of West and East Antarctica \citep{DirscherlAutomatedMappingAntarctic2020,StokesWidespreaddistributionsupraglacial2019}, there is still a considerable volume of water trapped in subglacial lakes \citep{WrightfourthinventoryAntarctic2012}.
+Many of these subglacial lakes are active and have drained and filled over the satellite era \citep[Fig.~\ref{fig:1.4},][]{Smithinventoryactivesubglacial2009,SiegfriedThirteenyearssubglacial2018}, including some that were associated with a temporary speed-ups of ice flow \citep[e.g.][]{Scambostriggeringsubglaciallake2011,BellLargesubglaciallakes2007,StearnsIncreasedflowspeed2008,WrightSubglacialhydrologicalconnectivity2014}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{subfigure}[t]{1.0\textwidth}
+    % TODO get higher resolution image from https://doi.org/10.1017/aog.2017.36 somehow
+    \includegraphics[width=1.0\textwidth]{chp1_fig_siegfried_fricker_subglacial_lakes.jpg}
+    \label{fig:1.4a}
+  \end{subfigure}
+  % \vfill
+  % \begin{subfigure}[t]{0.8\textwidth}
+  %   \includegraphics[width=1.0\textwidth]{chp1_fig_west_antarctica_icesat2_lakes}
+  %   \label{fig:1.4b}
+  % \end{subfigure}
+  \caption[Map of radio-echo sounding and satellite-detected subglacial lakes in Antarctica]{
+    Subglacial lakes over Antarctica as detected by satellite and airborne sensors.
+    Active subglacial lakes as detected by different satellite sensors are represented by different coloured blobs (blue, light blue and purple).
+    Radio-echo sounding (RES) detected subglacial lakes are shown as red blobs.
+    % Top panel shows those detected by Cryosat-2 radar altimetry.
+    Figure is from \citet{SiegfriedThirteenyearssubglacial2018}.
+    % TODO \ref{chp:4}
+    % Bottom panel shows those detected by ICESat-2 laser altimetry.
+    % Red polygons indicate draining lakes, while blue polygons are filling lakes.
+    % Period of subglacial lake activity is from 2018-10-14 to 2020-07-16.
+    % Plotted using Antarctic Stereographic Projection (EPSG:3031).
+  }
+  \label{fig:1.4}
+\end{figure}
+
+% Going back to our thesis statement, we need to figure out whether the sensitivity of the Antarctic ice sheet is due to this dynamic water field (skin drag), or if knowing the bed topography (form drag) to a higher resolution itself is sufficient.
+% While the study of these two components are not mutually exclusive, and may perhaps be geographically dependent, it is important to be aware of both of them.
+% One cannot assume that water in itself is a control on ice flow via sliding (though with subglacial water of sufficient thickness, this may be the case).
+% Neither can one assume that a suitably rough bed topography is enough to hold back an ice sheet without an understanding of how water can change the equations in a short time period.
+
+The subglacial hydrological system of Antarctica is very dynamic, and effort is needed to model and account for how subglacial water weakens subglacial till and induce faster sliding.
+The Subglacial Hydrology Model Intercomparison Project \citep[SHMIP;][]{DeFleurianSHMIPsubglacialhydrology2018} subjected a land terminating ice sheet to different subglacial hydrological schemes and forcing cycles (steady state, diurnal and seasonal), looking at how effective pressure (ice overburden pressure minus subglacial water pressure) and discharge volumes were affected.
+SHMIP found that complex 2-D models which include the physics of drainage systems were needed to model dynamic short term (e.g. diurnal) cycles, while simpler 0-D or 1-D models may suffice for less dynamic scenarios like those in steady state or happening on annual timescales.
+In Chapter \ref{ch:4}, our findings of rapid, sub-annual transmission of subglacial water across a connected subglacial lake system suggests that 2-D models are therefore needed.
+Our understanding of subglacial hydrology is still inadequate as mentioned in recent model intercomparisons \citep[ISMIP6; ][]{SeroussiISMIP6Antarcticamultimodel2020}, and research will need to focus on coupling subglacial hydrology models with ice sheet models \citep[e.g.][]{SommersSHAKTISubglacialHydrology2018,Smith-Johnsenrolesubglacialhydrology2020} to examine the influence of distributed vs channelized flow on ice dynamics.
+
+One takeaway from this thesis is the need to efficiently integrate data and methods from various fields working on Antarctic glaciology.
+In order to inform our understanding of future ice sheet behaviour for sea level rise projections, it is crucial to make full and efficient use of the growing volume of remote sensing and field collected data in our ice sheet models.
+The novel machine learning and automated remote sensing methods we introduce present an exciting path forward over existing classical methods, by enabling for the efficient ingestion and merging of diverse datasets.
+The bed of Antarctica may remain out of reach for the most part, but one can hope that the increasing synergy between data collectors and modellers will continue to improve our understanding of the Antarctic bed.
+
+% TODO Use motivation at https://www.cambridge.org/core/journals/journal-of-glaciology/article/antarctic-ice-sheet-response-to-sudden-and-sustained-iceshelf-collapse-abumip/C08970BDF95EA737AD941D3690EBB3C5/core-reader#sec5-1-4.
+% ``A major uncertainty remains in the physical understanding and modelling of subglacial till mechanics that are essential for determining the effective pressure and sliding rate at the base of a marine ice sheet. The few studies that have attempted to tackle this problem (e.g. Bueler and van Pelt, 2015; Gladstone and others, 2017) are based on seminal work by Tulaczyk and others (2000a, 2000b), but it is clear that more research in subglacial hydrology and basal mechanics of marine ice sheets is needed.''

@@ -1,0 +1,180 @@
+% Appendix
+
+\chapter{Details of loss function components}
+\chaptermark{Loss function}
+\label{appendix:A}
+
+The loss function, or cost function, is a mathematical function that maps a set of input variables to an output loss value.
+The loss value can be thought of as a weighted sum of several error metrics between the neural network's prediction and the expected output or ground truth.
+It is this loss value which we want to minimize so as to train the neural network model to perform better, and we do this by iteratively optimizing the parameters in the loss function.
+Following this are the details of the various loss functions that make up the total loss function of the DeepBedMap generative adversarial network model.
+
+\section{Content Loss}
+
+To bring the pixel values of the generated images closer to those of the ground truth, we first define the content-loss function~$L_1$.
+Following ESRGAN \citep{WangESRGANEnhancedSuperResolution2019}, we have
+
+\begin{equation}\label{eq:A1}
+  L_1 = \dfrac{1}{n} \sum\limits_{i=1}^n ||\hat{y}_i - y_i||_{1}~,
+\end{equation}
+
+where we take the mean absolute error between the generator network's predicted value~$\hat{y}_i$ and the ground-truth value~$y_i$, respectively, over every pixel $i$.
+
+\section{Adversarial Loss}
+
+Next, we define an adversarial loss to encourage the production of high-resolution images~$\hat{y}$ closer to the manifold of natural-looking digital-elevation-model images.
+To do so, we introduce the standard discriminator in the form of $D(y) = \sigma(C(y))$, where~$\sigma$ is the sigmoid activation function and $C(y)$ is the raw, non-transformed output from a discriminator neural network acting on high-resolution image~$y$.
+The ESRGAN model \citep{WangESRGANEnhancedSuperResolution2019}, however, employs an improved relativistic-average discriminator \citep{Jolicoeur-Martineaurelativisticdiscriminatorkey2018} denoted by~$D_{\text{Ra}}$.
+It is defined as $D_{\text{Ra}}(y,\hat{y}) = \sigma(C(y) - \mathbb{E}_{\hat{y}}[C(\hat{y})])$, where $\mathbb{E}_{\hat{y}}[\cdot]$ is the arithmetic mean operation carried out over every generated image $\hat{y}$ in a mini batch.
+We use a binary cross-entropy loss as the discriminator's loss function defined as follows:
+
+\begin{equation}\label{eq:A2}
+  L_{\mathrm{D}}^{\text{Ra}} = - \mathbb{E}_y[\ln(D(y,\hat{y}))] - \mathbb{E}_{\hat{y}}[\ln(1 - D(\hat{y},y))].
+\end{equation}
+
+The generator network's adversarial loss is in a symmetrical form:
+
+\begin{equation}\label{eq:A3}
+  L_{\mathrm{G}}^{\text{Ra}} = - \mathbb{E}_y[\ln(1 - D(y,\hat{y}))] - \mathbb{E}_{\hat{y}}[\ln(D(\hat{y},y))].
+\end{equation}
+
+\section{Topographic Loss}
+
+We further define a topographic loss so that the elevation values in the super-resolved image make topographic sense with respect to the original low-resolution image.
+Specifically, we want the mean value of each 4\,$\times$\,4 grid on the predicted super-resolution (DeepBedMap) image to closely match its spatially corresponding \SI{1}{pixel}\,$\times$\,\SI{1}{pixel} area on the low-resolution (BEDMAP2) image.
+
+First, we apply a 4\,$\times$\,4 mean pooling operation on the generator network's predicted super-resolution image:
+
+\begin{equation}\label{eq:A4}
+  \bar{\hat{y}}_j = \dfrac{1}{n} \sum\limits_{i=1}^n \hat{y}_i~,
+\end{equation}
+
+where $\bar{\hat{y}}_j$ is the mean of all predicted values~$\hat{y}_i$ across the 16 super-resolved pixels~$i$ within a 4\,$\times$\,4 grid corresponding to the spatial location of 1 low-resolution pixel at position $j$.
+Following this, we can compute the topographic loss as follows:
+
+\begin{equation}\label{eq:A5}
+  L_{\mathrm{T}} = \dfrac{1}{m} \sum\limits_{i=1}^m ||\bar{\hat{y}}_j - x_j||_{1}~,
+\end{equation}
+
+where we take the mean absolute error between the mean of the 4\,$\times$\,4 super-resolved pixels calculated in Eq.~(\ref{eq:A4}) $\bar{\hat{y}}_j$ and those of the spatially corresponding low-resolution pixel~$x_j$, respectively, over every low-resolution pixel~$j$.
+
+\section{Structural Loss}
+
+Lastly, we define a structural loss that takes into account luminance, contrast and structural information between the predicted and ground-truth images.
+This is based on the structural similarity index \citep[SSIM;][]{WangImageQualityAssessment2004} and is calculated over a single window patch as
+
+\begin{equation}\label{eq:A6}
+  \text{SSIM} (\hat{y}, y) = \dfrac{(2\mu_{\hat{y}}\mu_y + c_1)(2\sigma_{{\hat{y}}y} + c_2)}{(\mu_{\hat{y}}^2 + \mu_y^2 + c_1)(\sigma_{\hat{y}}^2 + \sigma_y^2 + c_2)},
+\end{equation}
+
+where $\mu_{\hat{y}}$ and $\mu_y$ are the arithmetic mean of predicted image~${\hat{y}}$ and ground-truth image~$y$, respectively, over a single window that we set to 9~pixels\,$\times$\,9~pixels; $\sigma_{{\hat{y}}y}$ is the covariance of~${\hat{y}}$ and~$y$; $\sigma_{\hat{y}}^2$ and $\sigma_y^2$ are the variances of~${\hat{y}}$ and~$y$, respectively; and~$c_1$ and~$c_2$ are two variables set to $0.01^2$ and $0.03^2$ to stabilize division with a weak denominator.
+Thus, we can formulate the structural loss as follows:
+
+\begin{equation}\label{eq:A7}
+  L_{\mathrm{S}} = 1 - \dfrac{1}{p} \sum\limits_{i=1}^p \text{SSIM} (\hat{y}, y)_p~,
+\end{equation}
+
+where we take $1$ minus the mean of all structural similarity values $\text{SSIM}(\hat{y}, y)$ calculated over every patch~$p$ obtained via a sliding window over the predicted image~${\hat{y}}$ and ground-truth image~$y$.
+
+\section{Total Loss Function}
+
+Finally, we compile the loss functions for the discriminator and generator networks as follows:
+
+\begin{align}
+  & L_{\mathrm{D}} = L_{\mathrm{D}}^{\text{Ra}}, \label{eq:A8}\\
+  & L_{\mathrm{G}} = \eta L_1 + \lambda L_{\mathrm{G}}^{\text{Ra}} + \theta L_{\mathrm{T}} + \zeta L_{\mathrm{S}}~, \label{eq:A9}
+\end{align}
+
+where $\eta$, $\lambda$, $\theta$ and $\zeta$ are the scaled weights for the content $L_1$, adversarial $L_{\mathrm{D}}$, topographic $L_{\mathrm{T}}$ and structural losses $L_{\mathrm{S}}$, respectively (see Table~\ref{table:B1} for values used).
+The loss functions $L_{\mathrm{D}}$ and $L_{\mathrm{G}}$ are minimized in an alternate $1:1$ manner so as to solve the entire generative adversarial network's objective function defined in Eq.~(\ref{eq:4}).
+
+
+\chapter{Neural Network Training Details} \label{appendix:B}
+
+The neural networks were developed using Chainer v7.0.0 \citep{TokuiChainerDeepLearning2019} and trained using full-precision (floating point 32) arithmetic.
+Experiments were carried out on four graphical processing units (GPUs), specifically two Tesla P100 GPUs and two Tesla V100 GPUs.
+On the Tesla V100 GPU setup, one training run with about 150 epochs takes about 30\,min.
+This is using a batch size of 128 on a total of 3826 training image tiles, with 202 tiles reserved for validation, i.e. a $95/5$ training/validation split.
+We next describe the method used to evaluate each DeepBedMap candidate model, as well as the high-level way in which we semi-automatically arrived at a good model via semi-automatic hyperparameter tuning.
+
+%TB1
+\begin{table}[b!]
+  \small
+  \caption{Optimized hyperparameter settings.}
+  \label{table:B1}
+  \begin{tabularx}{\textwidth}{lrr}
+  \hline
+  Hyperparameter                                       & Setting             & Tuning range                           \\
+  \hline
+  Learning rate (for both generator and discriminator) & $1.7\times 10^{-4}$ & $2\times 10^{-4}$ to $1\times 10^{-4}$ \\
+  Number of residual-in-residual blocks                & 12                  & 8 to 14                                \\
+  Mini-batch size                                      & 128                 & 64 or 128                              \\
+  Number of epochs                                     & 140                 & 90 to 150                              \\
+  Residual scaling                                     & 0.2                 & 0.1 to 0.5                             \\
+  Content-loss weighting $\eta$                        & $1\times 10^{-2}$   & Fixed                                  \\
+  Adversarial-loss weighting $\lambda$                 & $2\times 10^{-2}$   & Fixed                                  \\
+  Topographic-loss weighting $\theta$                  & $2\times 10^{-3}$   & Fixed                                  \\
+  Structural-loss weighting $\zeta$                    & 5.25                & Fixed                                  \\
+  He normal initialization scaling                     & 0.1                 & Fixed                                  \\
+  Adam optimizer epsilon                               & 0.1                 & Fixed                                  \\
+  Adam optimizer beta1                                 & 0.9                 & Fixed                                  \\
+  Adam optimizer beta2                                 & 0.99                & Fixed                                  \\
+  \hline
+  \end{tabularx}
+\end{table}
+
+To check for overfitting, we evaluate the generative adversarial network model using the validation dataset after each epoch using two performance metrics~-- a peak signal-to-noise ratio (PSNR) metric for the generator and an accuracy metric for the discriminator.
+Training stops when these validation performance metrics show little improvement, roughly at 140~epochs.
+
+Next, we conduct a full evaluation on an independent test dataset, comparing the model's predicted grid output with actual ground-truth \textit{xyz} points.
+Using the ``grdtrack'' function in Generic Mapping Tools v6.0 \citep{WesselGenericMappingTools2019}, we obtain the grid elevation at each ground-truth point and use it to calculate the elevation error on a point-to-point basis.
+All of these elevation errors are then used to compute a root mean square error (RMSE) statistic over this independent test site.
+This RMSE value is used to judge the model's performance in relation to baseline bicubic interpolation and is also the metric minimized by a hyperparameter optimization algorithm which we will describe next.
+
+Neural networks contain a lot of hyperparameter settings that need to be decided upon, and generative adversarial networks are particularly sensitive to different hyperparameter settings.
+To stabilize model training and obtain better performance, we tune the hyperparameters (see Table~\ref{table:B1}) using a Bayesian approach.
+Specifically, we employ the Tree-structured Parzen Estimator \citep{BergstraAlgorithmsHyperparameterOptimization2011} from the Optuna v2.0.0 \citep{AkibaOptunaNextgenerationHyperparameter2019} library with default settings as per the Hyperopt library \citep{BergstraHyperoptPythonlibrary2015}.
+Given that we have four GPUs, we choose to parallelize the hyperparameter tuning experiments asynchronously between all four devices.
+The estimator first conducts 20 random experimental trials to scan the hyperparameter space, gradually narrowing down its range to a few candidate hyperparameters in subsequent experiments.
+We set each GPU to run a target of 60 experimental trials (i.e. a total of 240), though unpromising trials that have exploding or vanishing gradients are pruned prematurely using the Hyperband algorithm \citep{LiHyperbandNovelBanditBased2018} to save on time and computational resources.
+The top models from these experiments undergo further visual evaluation, and we continue to conduct further experiments until a suitable candidate model is found.
+
+
+\chapter{Hydropotential} \label{sec:hydropotential}
+
+% hydropotential formulation
+% Estimate subglacial water routes https://www.mathworks.com/matlabcentral/fileexchange/55352-how-to-estimate-subglacial-water-routes
+
+Hydropotential (or hydrostatic pressure) refers to the static energy of water available at a particular time and place.
+It is a function of the amount of pressure exerted on a water body, located at a particular elevation relative to a reference datum.
+By calculating hydropotential over a spatial surface, we can then derive the hydropotential gradients which provides us with a measure of the direction and tendency of water to flow if suitable conduits exist in its path.
+Following the methods of \citet{ShreveMovementWaterGlaciers1972}, basal hydropotential \gls{phi} is calculated as follows:
+
+\begin{equation}\label{eq:4.11}
+  \phi = \phi_0 + p_w + \rho_wgz_b
+\end{equation}
+
+where \gls{phi} denotes hydropotential at the base of the ice, $\phi_0$ is an arbitrary constant, $p_w$ is water pressure and $\rho_wgz_b$ is the elevation potential term.
+The elevation potential term is made up of the density of water $\rho_w$ multiplied by the gravitational acceleration term $g$ multiplied by the bed elevation $z_b$.
+In most cases, subglacial water pressure $p_w$ can be approximated as the pressure induced by the overlying ice (overburden pressure):
+
+\begin{equation}\label{eq:4.12}
+  p_w = \rho_i * g * (z_s - z_b)
+\end{equation}
+
+where the static water pressure $p_w$ is equal to the density of ice $\rho_i$ multiplied by the gravitational acceleration term $g$ multiplied by the thickness of ice $z_s - z_b$ obtained from the ice surface elevation $z_s$ minus the ice bed elevation $z_b$.
+Using a gravitational acceleration $g$ of \SI{9.8}{\metre\per\second}, ice density $\rho_i$ of \SI{917}{\kilo\gram\per\metre\cubed}, and water density $\rho_w$ of \SI{1000}{\kilo\gram\per\metre\cubed}, we can substitute Equation \eqref{eq:4.12} into \eqref{eq:4.11} to obtain the following equation:
+
+\begin{equation}\label{eq:4.13}
+  \phi = 813.4\left(\frac{917}{83} * z_s + z_b \right)
+\end{equation}
+
+where the ice surface elevation $z_s$ is about $\frac{917}{83} = 11.05$ times more important than bed surface elevation $z_b$ for its effect on hydropotential $\phi$.
+This is an oft-cited constant, and varies across the literature from as low as $8$ to as high as $11$ depending on what densities of water $\rho_w$ and ice $\rho_i$ are used in the calculation.
+
+% See CarterAntarcticsubglaciallakes2017 Section 3.1, very good hydropotential equation description
+
+% Water under the ice sheet can be detected by remote sensing techniques.
+% This relies on the different transmission properties of ice, water and rock.
+% Surveying these features requires studying either elastic wave (e.g. seismic sounding) or electromagnetic wave (e.g. ice-penetrating radar) signals.
+% The waves may come from active or passive sources, and are detected from sensors deployed on the ground, in the air, or onboard of satellites in space.

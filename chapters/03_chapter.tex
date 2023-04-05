@@ -1,0 +1,445 @@
+% The role of subglacial topography on Antarctic ice flow
+
+\section*{Abstract}
+
+To examine the influence of bed topography on ice motion, we conduct an inversion experiment using two beds with different spatial resolutions - the $\SI{250}{\metre}$ resolution DeepBedMap\_DEM and the $\SI{500}{\metre}$ resolution BedMachine Antarctica.
+At the bed of a glacier, form drag and skin drag resists the driving stress of the overriding ice.
+We examine how an increase in form drag due to higher resolution topography affects the remaining skin drag component which is controlled by subglacial hydrology and bed material properties.
+An iterative least-squares control method basal inversion is performed using the Ice-sheet and Sea-level System Model (\gls{ISSM}) with L1L2 stress balance equations and a Schoof-type Coulomb-limited sliding law.
+Comparison of inverted fields between DeepBedMap\_DEM and BedMachine Antarctica do not appear to be significantly different.
+Basal drag and slipperiness fields are slightly higher, while effective pressure is generally lower when using the higher-resolution DeepBedMap\_DEM, due to a higher bed elevation model and thinner ice inducing less overburden pressure.
+Previous inversion studies using a Weertman-style sliding relation over Pine Island Glacier indicated that high resolution bed topography (i.e. more form drag) reduced basal drag (i.e. less skin drag), a conclusion that is not supported in this work as no noticeable decrease in basal drag (i.e. skin drag) was observed when higher resolution topography (i.e. more form drag) was used.
+These findings warrant more investigation into the dependence of ice sheet modelling on higher spatial resolution bed topographies ($<= \SI{100}{\metre}$) which increases form drag, and time-dependent subglacial hydrology which influences skin drag, over more diverse subglacial settings in West Antarctica.
+
+
+\section{Introduction}
+
+The bed topography of Antarctica is a critical parameter in ice sheet modelling studies as it affects basal slip - the combined motion of ice from sliding and bed deformation \citep[][p.223]{Cuffeyphysicsglaciers2010}.
+Understanding the slip relation remains one of the biggest uncertainties in our determination of the Antarctic ice sheet's contribution to sea level rise \citep[e.g.][]{RitzPotentialsealevelrise2015,BulthuisUncertaintyquantificationmulticentennial2019}.
+The basal conditions of an ice sheet vary spatially, and are often determined via inverse methods.
+Inverse methods allow us to use ice surface observations coupled with ice physics to solve for critical basal parameters needed for ice sheet modelling \citep[e.g.][]{MacAyealbasalstressdistribution1992,JoughinBasalconditionsPine2009,MorlighemInversionbasalfriction2013}, and also to resolve bed topography \citep[e.g.][]{MorlighemDeepglacialtroughs2019,LeongDeepBedMapdeepneural2020}.
+These indirect empirical methods are used because sampling subglacial sediments under the Antarctic ice sheet is logistically challenging \citep[e.g.][]{Siegertassessmentdeephotwater2014,TulaczykWISSARDSubglacialLake2014}, though having direct access to sediments would allow us to use physically based methods of quantifying basal slip \citep[e.g.][]{Zoetsliplawglaciers2020}.
+
+This chapter explores the interplay between two components of frictional drag at the ice-bed interface - form drag and skin drag \citep{SchoofBasalperturbationsice2002,BinghamDiverselandscapesPine2017,Kyrke-SmithRelevanceDetailBasal2018,Minchewuniversalglacierslip2020}.
+Form drag occurs from long-wavelength bed topography opposing ice motion \citep[][]{WeertmanSlidingGlaciers1957,SchoofBasalperturbationsice2002}, while skin drag arises in relation to lubricating water and bed material properties \citep{IversonExperimentsdynamicssedimentary2015}.
+To study this, we look at how a high resolution (\SI{250}{\metre}) rougher bed \citep{LeongDeepBedMap2020} compares with a medium resolution (\SI{500}{\metre}) smoother bed \citep{MorlighemMEaSUREsBedMachineAntarctica2020}.
+The spatially varying basal drag of the bed can be worked out by using bed topography to calculate form drag \citep{SchoofBasalperturbationsice2002}, and then taking the remainder balance as skin drag which is determined by bed material properties and subglacial hydrology \citep{Kyrke-SmithRelevanceDetailBasal2018}. % TODO define how form/skin drag is partitioned
+% A secondary objective is
+In the following, we review two key parameters which ice sheet models are sensitive to - multi-scale bed topography features and sliding law relations.
+
+
+
+% \subsection{Sensitivity of ice sheet models to basal parameters}
+
+% The physical basis of basal slip over deformable till is provided by Equation \eqref{eq:3.1},~\eqref{eq:3.2},
+% The effect of subglacial water on ice flow is likely geographically dependent, in that different basal conditions apply in different parts of Antarctica.
+
+\subsection{Bed Topography}
+
+\citet{DurandImpactbedrockdescription2011} performed a sensitivity analysis on different spatial resolution beds using a 2-D flowline model and suggested that a spatial resolution of at least \SI{1}{\kilo\metre} was needed to accurately model coastal outlet glaciers.
+This was followed by the creation of BEDMAP2 \citep{FretwellBedmap2improvedice2013} - a \SI{1}{\kilo\metre} resolution Antarctic bed elevation model resampled from a \SI{5}{\kilo\metre} grid, which became the de facto standard for ice sheet models \citep[see e.g.][]{SeroussiinitMIPAntarcticaicesheet2019}.
+However, there have been issues reported in relation to BEDMAP2's ice thickness at the former grounding line of Pine Island Glacier that did not respect mass conservation \citep{RignotWidespreadrapidgrounding2014}.
+High resolution bed elevations are especially needed close to grounding zones \citep[e.g.][]{SchoofIcesheetgrounding2007,CornfordAdaptivemeshrefinement2016}, and there is a need for high resolution ($<= \SI{500}{\metre}$) bed elevation models that preserve topographic details, so that form drag - resistance to ice flow due to bed topography - is correctly accounted for \citep{BinghamDiverselandscapesPine2017,Kyrke-SmithRelevanceDetailBasal2018}.
+The limitations of BEDMAP2 motivated the creation of higher resolution ($<=$ \SI{500}{\metre}) bed \gls{DEM}s with two important attributes - large-scale topography that is consistent with mass conservation requirements \citep[e.g.][]{Morlighemmassconservationapproach2011}, and preservation of fine-scale roughness details \citep[e.g.][]{GoffConditionalsimulationThwaites2014,Grahamhighresolutionsyntheticbed2017}, both of which are needed to fully capture ice-sheet dynamics.
+
+\paragraph{Long-wavelength details captured by mass conservation}
+
+Ice sheet models include the physical laws of mass conservation, and this can be used to invert ice surface observations into bed elevation \citep[e.g.][]{Morlighemmassconservationapproach2011}.
+Using an ensemble of 2-D shelfy stream approximation \citep[SSA;][]{MacAyealLargescaleiceflow1989} models, \citet{SchlegelExplorationAntarcticIce2018} performed a comparison of bedrock topography over the Antarctic ice sheet, and their informed bound (using regionally based boundary conditions) experiments showed that using an improved BEDMAP2 mass conserving grid \citep[cf.][]{RignotWidespreadrapidgrounding2014} produced $0.3292\pm\SI{0.1019}{\metre}$ \gls{SLE}, while the older BEDMAP \citep{LytheBEDMAPnewice2001} grid produced a $0.1845\pm\SI{0.08834}{\metre}$ \gls{SLE} over a \SI{100}{\year} period.
+This represents a mean increase of \SI{0.14}{m} \gls{SLE} from the improved resolution BEDMAP2 mass conserving grid, but also an 18\% increase in the \gls{SLE} uncertainty which suggests a wider range of grounding line retreat scenarios with implications for ice sheet stability.
+On a catchment scale, \citet{NiasNewMassConserving2018} produced a mass-conserving bed topography over Pine Island Glacier and found that modelled sea level contributions over a \SI{50}{\year} period was consistently higher using the mass-conserving bed (\SIrange{0.08}{0.10}{\milli\metre\per\year} \gls{SLE}) than with BEDMAP2 (\SIrange{0.04}{0.07}{\milli\metre\per\year} \gls{SLE}) irrespective of the sliding law used.
+Since then, this mass conservation technique has been applied to other key outlet glaciers and ice streams in BedMachine Antarctica \citep{MorlighemMEaSUREsBedMachineAntarctica2020}, identifying new areas vulnerable to Marine Ice Sheet Instability such as at Ninnis Glacier in George V Land and Denman Glacier in East Antarctica which both rest on retrograde slopes \citep{MorlighemDeepglacialtroughs2019}.
+This medium resolution (\SI{500}{\metre}) mass conserving BedMachine Antarctica grid \citep[version 2,][]{MorlighemMEaSUREsBedMachineAntarctica2020} will be used in our basal inversion experiment.
+
+\paragraph{Short-wavelength details from spatial statistics}
+
+% the super-resolution DeepBedMap\_DEM \citep{LeongDeepBedMapdeepneural2020}
+Using an ensemble of L1L2 \citep{Hindmarshnumericalcomparisonapproximations2004,SchoofThinFilmFlowsWall2010} ice sheet models, \citet{SunDynamicresponseAntarctic2014} showed that the phase of low-frequency noise ($>\SI{10}{\kilo\metre}$) was more important than the phase of high-frequency noise ($<\SI{1}{\kilo\metre}$) of the same amplitude in their model projection runs.
+Still, the ice sheet model was sensitive to the amplitude of the short-wavelength/high-frequency noise even if the phase of that noise was not so important.
+Spatial statistical methods have since been used to retrieve this topographical noise along radio-echo sounding (\gls{RES}) transects and apply it spatially to a larger regional extent.
+Over Thwaites Glacier, \citet{GoffConditionalsimulationThwaites2014} captured the different roughness statistics between highland and lowland parts, and applied these to the whole catchment using a conditional simulation method which allowed fine-scale roughness and channelized morphologies to be resolved better than ordinary kriging.
+\citet{Grahamhighresolutionsyntheticbed2017} generated a synthetic high-resolution ($\SI{100}{\metre}$) grid using a two-step approach, with the low-frequency component derived from BEDMAP2, and a high-frequency component derived from radar point data from the Investigating the Cryospheric Evolution of the Central Antarctic Plate (ICECAP) and BEDMAP compilation.
+\citet{LeongDeepBedMapsuperresolutiondeep2019} used 2-D gridded \gls{RES} ground-truth data with ice surface observations of elevation, velocity and snow accumulation to train a super-resolution deep neural network model, using it to produce a \SI{250}{\metre} resolution grid of the Antarctic ice sheet.
+This super-resolution (\SI{250}{\metre}) DeepBedMap\_DEM grid \citep[version 1.1,][]{LeongDeepBedMap2020} will be used in our basal inversion experiment.
+
+
+
+\subsection{Basal drag}
+
+% \subsection{Form drag vs Skin drag}
+
+Form drag arises due to large-scale bed topography which opposes the motion of ice as it flows and deforms around obstacles on a rigid bed \citep[][]{WeertmanSlidingGlaciers1957,SchoofBasalperturbationsice2002}.
+Skin drag occurs in relation to bed material properties and in the presence of water that acts to lubricate the ice-bed interface and allow subglacial till to deform more easily \citep{IversonExperimentsdynamicssedimentary2015}.
+The physical mechanisms of these two processes may differ, but the mathematical formulation and parameterizations for both are similar \citep[Fig.~\ref{fig:1.3},][]{Minchewuniversalglacierslip2020}.
+
+\subsubsection{Physical basis of basal slip}
+
+A basal slip law that relates basal drag or basal shear stress $\tau_b$ with effective normal stress (pressure) $N$ and basal slip velocity $u_b$ is given by \citet[][eq.1]{Zoetsliplawglaciers2020}:
+
+\begin{equation}
+  \tau_b = \min [ N \tan(\phi), (C u_b)^{1/m} ] \label{eq:3.1}
+\end{equation}
+
+where $\phi$ is the friction angle of the basal till, such that $\tan(\phi)$ is the friction coefficient, $m$ is a slip law exponent, and $C$ is a constant dependent on a transitional velocity $u_t$ and bed roughness, formulated as $C = \frac{(N \tan(\phi))^{m}}{u_t}$.
+The approximate continuous form of Equation \eqref{eq:3.1} \citep[][eq.3]{Zoetsliplawglaciers2020} is as follows:
+
+\begin{equation}
+  \tau_b = N \tan(\phi) \left( \frac{u_b}{u_b + u_t} \right)^{1/p} \label{eq:3.2}
+\end{equation}
+
+where $p$ is a slip exponent, experimentally determined to be $\sim5$ \citep{Zoetsliplawglaciers2020}.
+
+At low basal slip speeds ($u_b \to 0$) typically found over rigid, dry beds, viscous Weertman-style behaviour \citep[$(C u_b)^{1/m}$ in Eq.~\ref{eq:3.1},][]{WeertmanSlidingGlaciers1957} dominates total drag $\tau_b$.
+At high basal slip speeds ($u_b \to \infty$) found over water-saturated deforming beds, Coulomb-plastic behaviour \citep[$N \tan(\phi)$ in Eq.~\ref{eq:3.1}, e.g.][]{Schoofeffectcavitationglacier2005,JoughinRegularizedCoulombFriction2019} is more influential.
+The upper bound of $\tau_b$ is based on the shear strength of the till, as determined from ring-shear laboratory experiments \citep{Zoetsliplawglaciers2020}.
+Past the transition speed $u_t$, basal drag $\tau_b$ becomes independent of basal slip velocity $u_b$ \citep[c.f.][]{StearnsFrictionbeddoes2018}.
+The physical formulation of Equation \eqref{eq:3.1} is similar to that of other Coulomb-based parametrizations \citep[e.g.][]{TsaiMarineicesheetprofiles2015,JoughinRegularizedCoulombFriction2019}, but while previous implementations fixed $C$ to estimate $u_t$ via inversion (\textit{a posteriori}), Equation \eqref{eq:3.1} is formulated on a physical basis with $u_t$ derived independently \citep[using clast size and till placement, see eq.2 in][]{Zoetsliplawglaciers2020} and then used to directly determine $C$ (\textit{a priori}).
+
+
+\subsubsection{Sliding laws - linear viscous to Coulomb-limited}
+
+% TODO throw in Coulomb sliding law review from \citet{NobleSensitivityAntarcticIce2020}
+
+It is not feasible to access subglacial till across a glaciated area to physically determine $u_t$ using Equation \eqref{eq:3.1}, so parameterized basal slip relations are used in practice.
+Sensitivity analyses conducted in multiple ice sheet model comparison studies \citep[e.g.][]{SeroussiinitMIPAntarcticaicesheet2019,SunAntarcticicesheet2020,ZhangcomparisontwoStokes2017} have explored the use of different basal slip relations or sliding laws (see Fig.~\ref{fig:sliding_laws}), and the different tunable parameters that come with them.
+\citet{Gillet-ChauletAssimilationsurfacevelocities2016} used surface velocity observations from 1996 to 2010 over Pine Island Glacier and suggested that a non-linear Weertman stress exponent of $m >= 5$ best matched observed flow accelerations, with the assumption that the basal slipperiness coefficient $C$ remained constant over the period.
+In the Antarctic BUttressing Model Intercomparison Project \citep[ABUMIP;][]{SunAntarcticicesheet2020}, the ice-shelf removal or `float-kill' experiment (ABUK) noted how ice sheet models implementing linear Weertman/Coulomb friction laws tend to show lower ice loss (\SI{3.07}{\metre} \gls{SLE}) than models which implemented pseudo-plastic (\SI{4.41}{\metre} \gls{SLE}) or plastic (\SI{10.20}{\metre} \gls{SLE}) sliding laws.
+Ice sheet models implementing such non-linear/plastic sliding laws generally lead to faster grounding line retreat than those using viscous linear sliding laws over the Amundsen Sea Embayment area \citep[e.g.][]{JoughinBasalconditionsPine2009,RitzPotentialsealevelrise2015,BrondexSensitivitygroundingline2017,BulthuisUncertaintyquantificationmulticentennial2019}.
+
+\begin{figure}[htbp]
+  \includegraphics[width=1.0\textwidth]{chp3_fig_sliding_law_comparisons.jpg}
+  \caption[Comparison of Weertman, Budd, Schoof and Tsai sliding laws]{
+    Comparison of linear (Weertman, Budd) and non-linear, Coulomb limited (Schoof and Tsai) sliding laws.
+    Basal velocity $u_b$ is plotted on the vertical y-axis and effective pressure $N$ is plotted on the horizontal x-axis.
+    Coloured iso-lines represent basal drag ($\tau_b$) values ranging from \SI{0.04}{\mega\pascal} to \SI{0.2}{\mega\pascal}.
+    Figure is from \citet{BrondexSensitivitygroundingline2017}.
+  }
+  \label{fig:sliding_laws}
+\end{figure}
+
+Other intercomparisons have judged the ability of different sliding laws to properly model grounding line dynamics, with overarching support for effective pressure ($N$) dependent sliding laws such as Budd-type \citep{BuddEmpiricalStudiesIce1979}, Tsai-type \citep{TsaiMarineicesheetprofiles2015} or Schoof-type \citep{Schoofeffectcavitationglacier2005} formulations instead of a classical Weertman-type \citep{WeertmanSlidingGlaciers1957} relation \citep[see Fig.~\ref{fig:sliding_laws},][]{BrondexSensitivitygroundingline2017,BrondexSensitivitycentennialmass2019}.
+In particular, \citet{JoughinRegularizedCoulombFriction2019} noted how the effects of cavitation on sliding \citep[see][]{Schoofeffectcavitationglacier2005} appear important at Pine Island Glacier, recommending a regularized Coulomb sliding law with $m = 3$ and velocity threshold $u_o = 300\,\si{\metre\per\year}$ to reliably reproduce glacier behaviour in a manner applicable to both weak till and hard bedrock areas.
+Coulomb-limited sliding relations are generally favoured, such as a Schoof-type law for its ability to transition continuously between Weertman and Coulomb sliding regimes in different settings \citep{BrondexSensitivitygroundingline2017,BrondexSensitivitycentennialmass2019,CornfordResultsthirdMarine2020,Zoetsliplawglaciers2020,Minchewuniversalglacierslip2020}.
+Thus, we choose to use the Schoof sliding law \citep[adapted from][eq. 6.2]{Schoofeffectcavitationglacier2005}, presented below in a form similar to that of Equation \eqref{eq:3.2}:
+
+\begin{equation}
+  \tau_b = N C \left( \frac{\Lambda}{\Lambda + \Lambda_0} \right)^{1/m}, \Lambda = \frac{u_b}{N^m} \label{eq:3.3}
+\end{equation}
+
+where $\tau_b$ is basal drag, $N$ is effective pressure, $C$ is the Schoof friction coefficient less than the maximum bed slope (c.f. $\tan(\phi)$ in Eq.~\eqref{eq:3.2}), $u_b$ is basal velocity, $\Lambda_0$ is a maximum threshold that satisfies Iken's bound (c.f. $u_t$ in Eq.~\eqref{eq:3.2}), and $m$ is a power law exponent.
+Equation \eqref{eq:3.3} will be reformulated as Equation \eqref{eq:schoof} in the Methods section to follow the \gls{ISSM} \citep{LarourContinentalscalehigh2012} Schoof sliding law implementation.
+
+
+% TODO!! Zoet & Iverson 2020 and Michew & Joughin 2020
+% Use https://science.sciencemag.org/content/sci/368/6486/29/F1.large.jpg in Thesis Introduction!!
+
+
+\subsection{Previous work} % Relevance of basal roughness
+
+\citet{Kyrke-SmithRelevanceDetailBasal2018} ran a Full Stokes ice sheet model inversion experiment with a Weertman-style sliding law on two different beds - a high-resolution (\SI{50}{\metre}) bed topography from DELORES data \citep{BinghamDiverselandscapesPine2017} and on a low-resolution (\SI{1000}{\metre}) BEDMAP2 \citep{FretwellBedmap2improvedice2013} - to compare the balance of slipperiness ($C$) and basal drag ($\tau_b$) estimates.
+They reported that spatial patterns of both slipperiness $C$ and basal drag $\tau_b$ were similar across both high- and low-resolution experiments.
+However, the magnitude of the spatially averaged basal drag $\tau_b$ (i.e. skin drag) was consistently lower when using the high-resolution DELORES \gls{DEM} than with the low-resolution BEDMAP2 owing to more form drag being accounted for.
+Over the iSTARt1 area for example, the high-resolution DELORES \gls{DEM} had $\bar{\tau_b} = \SI{6.8}{\kilo\pascal}$, low-resolution BEDMAP2 had $\bar{\tau_b} = \SI{9.6}{\kilo\pascal}$, while the flat bed control experiment had $\bar{\tau_b} = \SI{11.9}{\kilo\pascal}$.
+The lower mean basal drag $\bar{\tau_b}$ was attributed to an increase in form drag introduced by the high-resolution DELORES DEM that induces more resistive stresses on ice.
+The skin drag component must therefore decrease, corresponding to a lower slipperiness $C$, in order for the modelled velocity to match the observed velocity in the inversion process.
+The implications of this are that both basal drag $\tau_b$ and slipperiness $C$ may be overestimated for ice sheet models using parameterizations based on low-resolution bed topography models like BEDMAP2 \citep{Kyrke-SmithRelevanceDetailBasal2018}.
+Here, we expand on the work of \citet{Kyrke-SmithRelevanceDetailBasal2018} by running an L1L2 ice sheet model \citep[\gls{ISSM};][]{LarourContinentalscalehigh2012} using a Coulomb-limited Schoof-type sliding law \citep{JoughinRegularizedCoulombFriction2019,Schoofeffectcavitationglacier2005} over the larger spatial area of the main trunk of Pine Island Glacier (see Fig.~\ref{fig:topo_and_speed}).
+
+% TODO paraphrase
+% It therefore makes sense that the derived skin drag is consistently lower when more detailed bed variations are included in the domain; the form drag transmitted by the bed variations balances more of the driving stress.
+
+\clearpage
+\section{Methods} \label{sec:methods}
+
+\subsection{Ice Sheet model set-up}
+
+% Refer to https://tc.copernicus.org/articles/12/3861/2018/ setup
+% Also https://doi.org/10.1017/jog.2020.8, ISSM model
+
+\subsubsection{Stress balance model}
+
+We use an L1L2 model \citep{Hindmarshnumericalcomparisonapproximations2004,SchoofThinFilmFlowsWall2010} implemented in the Ice-sheet and Sea-level System Model \citep[\gls{ISSM}, v4.18;][]{LarourContinentalscalehigh2012}.
+\gls{ISSM} is a thermomechanical finite-element ice flow model that follows physical laws for the conservation of mass, momentum and energy, coupled with constitutive material laws and boundary conditions \citep{LarourContinentalscalehigh2012}.
+Ice is treated as an viscous incompressible material \citep{Cuffeyphysicsglaciers2010} with a non-linear ice effective viscosity $\mu$ following a Norton-Hoff rheology law \citep[Glen's flow law,][]{Glencreeppolycrystallineice1955}:
+
+\begin{equation}
+  \mu = \frac{B}{2 \dot{\epsilon}_e^{(n-1)/n}}
+\end{equation}
+
+where $B$ is the temperature dependent ice hardness (rigidity), $\dot{\epsilon}_e$ is the effective strain rate tensor, $n$ is Glen's flow law exponent.
+
+\subsubsection{Sliding law}
+
+Within \gls{ISSM}, we applied a Schoof-type basal sliding law \citep{Schoofeffectcavitationglacier2005}:
+
+% from https://icepack.github.io/notebooks/tutorials/04-synthetic-ice-stream/
+% \begin{equation}
+%   \tau_b = -\frac{\tau_0|u_b|^{\frac{1}{m} - 1}u_b}{\left(u_0^{\frac{1}{m} + 1} + |u_b|^{\frac{1}{m} + 1}\right)^{\frac{1}{m + 1}}}
+% \end{equation}
+
+\begin{equation}
+  \tau_b = -\frac{C |u_b|^{m-1} u_b}{\left(1 + \left(\frac{C}{C_{\text{max}}N}\right)^{1/m} + |u_b|\right)^m} \label{eq:schoof}
+\end{equation}
+
+where $\tau_b$ is basal drag, $C$ is the Schoof friction coefficient (slipperiness), $C_{\text{max}}$ is a Coloumb friction upper bound parameter, $u_b$ is basal ice velocity, $N$ is effective pressure, and $m$ is a positive power law exponent (note that $m$ here is the reciprocal of $m$ in other studies \citep[e.g.][]{TsaiMarineicesheetprofiles2015}, i.e. $m = 1/m_{\text{Tsai}} = 1/3$).
+
+The friction factor $C_{\text{max}}$ imposes an upper limit on $\tau_b$ which must satisfy Iken's bound \citep{IkenEffectSubglacialWater1981,GagliardiniFiniteelementmodelingsubglacial2007}:
+
+\begin{equation}
+  \tau_b \leq N\tan\beta
+\end{equation}
+
+where $\beta$ is the maximum local up-slope angle between the bed and mean flow direction.
+Based on lab experiments \citep{IversonRingshearstudiestill1998}, $C_{\text{max}}$ is set to between $\tan \SI{10}{\degree} = 0.17$ and $\tan \SI{40}{\degree} = 0.84$, with lower values corresponding to clay-rich tills \citep[, pp.266-267]{Cuffeyphysicsglaciers2010}.
+The spatial distribution of $C_{max}$ varies across a glacier but no method yet exists to constrain it, so a uniform value of 0.4 is used instead \citep[0.4 and 0.6 was used in][]{BrondexSensitivitycentennialmass2019}.
+% The magnitude of $\tau_b$ has an asymptotic behaviour, tending towards $|u|^{\frac{1}{m}}$ at low ice velocities when $|u| << u_o$, but to $\tau_0$ at high ice velocities when $|u| >> u_o$.
+The magnitude of $\tau_b$ has an asymptotic behaviour, such that $\tau_b \sim C u_b^m$ as $N$ trends towards infinity corresponding to a Weertman-type sliding regime, and $\tau_b \sim C_{\text{max}} N$ as $N$ trends towards zero corresponding to a Coloumb-type sliding regime \citep{BrondexSensitivitygroundingline2017}.
+
+The effective pressure ($N$) can be approximated using ice overburden pressure minus water pressure:
+
+\begin{equation}
+  N = \rho_i g H - P_w
+\end{equation}
+
+where $\rho_i$ is ice density, $g$ is gravitational acceleration, $H$ is ice thickness and $P_w$ is water pressure.
+
+% A Budd-type sliding law \citep{BuddEmpiricalStudiesIce1979} is applied with parameters $p=1$, $q=1$, % TODO check parameters
+
+% \begin{equation}
+%   \tau_b = -C N^r |v_b|^{s-1} v_b
+% \end{equation}
+
+% where $N$ is the effective pressure at the ice base, $C$ is slipperiness (friction coefficient), $v_b$ is basal velocity.
+% r and s are defined as
+
+% \begin{equation}
+%   r = \frac{q}{p}, s=\frac{1}{p}
+% \end{equation}
+
+% where $p$ and $q$ are sliding law exponents.
+% The parameter $s$ is similar to $m$ in a Weertman sliding law, and we set $p=0.2$ and $q=0.2$ to obtain an $m=5$ non-linear sliding law.
+
+%TODO use m=8 (not 1) and see what happens
+
+\subsubsection{Boundary conditions} \label{sec:boundary_conditions}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.99\textwidth]{figures/chp3_fig_topography_and_speed}
+  \caption[Topographies and Speed over Pine Island Glacier]{
+    Topographies and speed over Pine Island Glacier study area.
+    a) Ice surface elevation from \citet{HowatReferenceElevationModel2019}.
+    b) Ice surface speed (contours in white) from \citet{MouginotMEaSUREsPhaseMap2019}.
+    c) DeepBedMap\_DEM bed elevation.
+    d) BedMachine bed elevation.
+    Plotted on an Antarctic Stereographic Projection with a standard latitude of 71°S (EPSG:3031).
+  }
+  \label{fig:topo_and_speed}
+\end{figure}
+
+% Get from the PIG_par.py file
+The boundary conditions are kept equal across all experiments, aside from modifications to the bed topography (see Fig.~\ref{fig:topo_and_speed}). % TODO and sliding law parameters?
+The model's spatial domain is a triangulated static anisotropic adaptive mesh grid with 10 vertical layers, and a spatial resolution of \SIrange{250}{20000}{\metre} (higher resolution over areas of high ice velocity), located over the main trunk of Pine Island Glacier.
+The same mesh is used for both experiments.
+A minimum ice thickness of \SI{1}{\metre} is set to avoid numerical instabilities.
+A stress-free surface is applied at the ice-atmosphere interface $\boldsymbol{\sigma} \cdot \boldsymbol{n} = 0$ where $\boldsymbol{\sigma}$ is the Cauchy stress tensor and $\boldsymbol{n}$ is the unit outward-pointing normal vector \citep[][eq. 18]{LarourContinentalscalehigh2012}.
+Surface mass balance, ice temperature and geothermal heat flux are from ALBMAPv1 \citep{LeBrocqimprovedAntarcticdataset2010}.
+
+\subsection{Inverting for basal drag $\tau_b$}
+
+To determine the spatial distribution of basal drag ($\tau_b$), we run an inversion using remotely sensed values of surface velocity $u_s$ (Fig.~\ref{fig:topo_and_speed}b).
+This is accomplished using a least-squares approach involving a control method \citep[][eq. 6]{MacAyealbasalstressdistribution1992} which avoids the errors in $\tau_b$ caused by using a direct algebraic inversion approach \citep[e.g.][eq. 4, 5]{MacAyealbasalstressdistribution1992} which is more sensitive to un-physical interpolations of $u_s$.
+Following \citet[][eq. 9]{MorlighemInversionbasalfriction2013}, the objective function or cost function $J$ used to minimize the difference in modelled and observed surface velocities is formulated as follows:
+
+\begin{equation}
+  J(\boldsymbol{v}, \alpha) = J_{mis} + \gamma_1 J_{1} + \gamma_t J_{2}
+\end{equation}
+
+where $\boldsymbol{v}$ is ice surface velocity, $\alpha$ is the parameter being inverted (i.e. the friction coefficient $\ln(C)$), and $\gamma_1, \gamma_t$ are non-dimensional weighting constants.
+The initial friction coefficient was set as $\alpha_0 = \SI{10}{(\pascal\,\year\per\metre)}^{1/2}$ for the model domain.
+We set $\gamma_1 = 100$ and $\gamma_t = 10^{-7}$ following \citet{MorlighemInversionbasalfriction2013}.
+
+The first term $J_{mis}$ is an $L^2$ misfit calculated as:
+
+\begin{equation}
+  J_{mis} = \frac{1}{2} \int_{\Gamma_s} (v_x - v_x^{obs})^2 + (v_y - v_y^{obs})^2 \,d\Gamma_s
+\end{equation}
+
+where $v_x$ and $v_y$ are modelled ice surface velocities (in the $x$ and $y$ directions), $v_x^{obs}$ and $v_y^{obs}$ are observed ice surface velocities from \citet{MouginotContinentWideInterferometric2019}, and $\Gamma_s$ is the ice surface domain.
+
+The second term $J_1$ takes the squared natural logarithmic difference between $u$ and $u_{obs}$:
+
+\begin{equation}
+  J_1 = \frac{1}{2} \int_{\Gamma_s} \ln \left( \frac{\sqrt{u^2 + v^2} + \epsilon}{\sqrt{u_{obs}^2 + v_{obs}^2} + \epsilon}  \right)^2 \,d\Gamma_s
+\end{equation}
+
+where $\epsilon$ is a minimal velocity used to avoid division by zero. This $J_1$ term accounts for the order of magnitude difference in ice flow speed that ranges from $>\SI{1000}{\metre\per\year}$ at ice streams to $<\SI{1}{\metre\per\year}$ in the slow moving interior \citep{MouginotContinentWideInterferometric2019}.
+
+The third term $J_2$ is a Tikhonov regularization term which applies a degree of smoothness to the inversion:
+
+\begin{equation}
+  J_2 = \frac{1}{2} \int_{\Gamma_b} \nabla\alpha \cdot \nabla\alpha \,d\Gamma_b
+\end{equation}
+
+where $\Gamma_b$ is the ice bed domain, and recall that $\alpha$ is the parameter being inverted.
+
+The inversion is computed by iteratively minimizing the total cost function $J$ until a convergence stopping criterion is reached.
+The stopping criterion is set empirically as when the cost function output value reduces by $<0.1$ between successive iterations.
+Further details of the inversion process can be found in \citet{MorlighemInversionbasalfriction2013}.
+
+\clearpage
+\section{Results} \label{sec:results}
+
+We now present our results over Pine Island Glacier, comparing the medium spatial resolution (\SI{500}{\metre}) smooth bed \citep[BedMachine v2;][]{MorlighemMEaSUREsBedMachineAntarctica2020} with a high spatial resolution (\SI{250}{\metre}) rough bed \citep[DeepBedMap\_DEM v1.1;][]{LeongDeepBedMap2020}.
+In the following, we present the inverted spatial distributions of each bed's modelled velocity ($u_b$, Fig.~\ref{fig:velocity}) along with effective pressure ($N$, Fig.~\ref{fig:effective_pressure}), slipperiness ($C$, Fig.~\ref{fig:slipperiness}), and basal drag ($\tau_b$, Fig.~\ref{fig:basal_drag}) fields.
+For all the fields above, we also present a transect plot taken along the main trunk of Pine Island Glacier (Fig.~\ref{fig:transect_AB}) and across flow (Fig.~\ref{fig:transect_CD}).
+
+\paragraph{Basal velocity ($u_b$)}
+
+In Fig.~\ref{fig:velocity}, velocity $u_b$ is shown to increase from the upstream part of the glacier (A) to the downstream part of the glacier (B) near the grounding zone for both DeepBedMap and BedMachine.
+The mean velocity ($\bar{u_b}$) for DeepBedMap\_DEM (\SI{614}{\metre\per\year}) is slightly higher than that of BedMachine (\SI{552}{\metre\per\year}), a difference of \SI{62}{\metre\per\year}.
+Spatially, the difference in velocity between the two beds appears to be greatest near the grounding zone around point B (see also Fig.~\ref{fig:transect_CD}b).
+
+\paragraph{Effective Pressure ($N$)}
+
+In Fig.~\ref{fig:effective_pressure}, effective pressure $N$ is shown to decrease from the upstream part of the glacier (A) to the downstream part of the glacier (B) near the grounding zone for both DeepBedMap and BedMachine.
+The mean effective pressure ($\bar{N}$) for DeepBedMap\_DEM ($\SI{1.3389e7}{\pascal}$) is lower than that of BedMachine ($\SI{1.3807e7}{\pascal}$), a difference of $\SI{4.1762e5}{\pascal}$.
+The along-flow transect plot (see Fig.~\ref{fig:transect_AB}c) shows that DeepBedMap\_DEM's effective pressure field over the grounding zone (near point B) is noisier than that of BedMachine.
+
+\begin{landscape}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.65]{figures/chp3_fig4_inverted_bed_velocity}
+  \caption[Comparison of basal velocity over Pine Island Glacier for DeepBedMap and BedMachine]{
+    Comparison of basal velocity $u_b$ over Pine Island Glacier for DeepBedMap and BedMachine.
+    Ice flow direction is from top (point A) to bottom (point B).
+    Transect lines cut along flow from upstream point A to downstream point B, and transversely from high elevation point C to low elevation point D.
+    Plotted on an Antarctic Stereographic Projection with a standard latitude of 71°S (EPSG:3031).
+  }
+  \label{fig:velocity}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.65]{figures/chp3_fig3_inverted_bed_pressure}
+  \caption[Comparison of effective pressure over Pine Island Glacier for DeepBedMap and BedMachine]{
+    Comparison of effective pressure $N$ over Pine Island Glacier for DeepBedMap and BedMachine.
+    Ice flow direction is from top (point A) to bottom (point B).
+    Transect lines cut along flow from upstream point A to downstream point B, and transversely from high elevation point C to low elevation point D.
+    Plotted on an Antarctic Stereographic Projection with a standard latitude of 71°S (EPSG:3031).
+  }
+  \label{fig:effective_pressure}
+\end{figure}
+\end{landscape}
+
+\paragraph{Slipperiness ($C$)}
+
+In Fig.~\ref{fig:slipperiness}, slipperiness $C$ (friction coefficient) is shown to increase from the upstream part of the glacier (A) to the downstream part of the glacier (B) near the grounding zone for both DeepBedMap and BedMachine.
+The mean slipperiness ($\bar{C}$) for DeepBedMap\_DEM ($\SI{31.39}{(\pascal\,\year\per\metre)}^{1/2}$) is slightly higher than that of BedMachine ($\SI{31.33}{(\pascal\,\year\per\metre)}^{1/2}$), a difference of $\SI{0.06}{(\pascal\,\year\per\metre)}^{1/2}$.
+The along-flow transect plot (see Fig.~\ref{fig:transect_AB}d) shows that DeepBedMap\_DEM is missing one slipperiness peak at Y:-130000 compared to BedMachine Antarctica, owing to an offset of one the ridges.
+% Spatially, the difference in slipperiness between the two beds is more pronounced near the shear margins of the ice stream (see across-track transect at Fig.~\ref{fig:transect_CD}d).
+
+\paragraph{Basal drag ($\tau_b$)}
+
+In Fig.~\ref{fig:basal_drag}, basal drag $\tau_b$ is shown to increase from the upstream part of the glacier (A) to the downstream part of the glacier (B) near the grounding zone for both DeepBedMap and BedMachine.
+The mean basal drag ($\bar{\tau_b}$) for DeepBedMap\_DEM (\SI{203}{\pascal}) is slightly higher than that of BedMachine (\SI{192}{\pascal}), a difference of \SI{11}{\pascal}.
+Spatially, the difference in basal drag between the two beds appears more pronounced near the shear margins along the main trunk of the glacier (see across-track transect at Fig.~\ref{fig:transect_CD}e).
+
+% are more pronounced at the grounding line near point B, with BedMachine showing a peak value of \SI{1.2e14}{\pascal} and DeepBedMap\_DEM showing \SI{1.6e14}{\pascal}, or a difference of \SI{4e13}{\pascal}.
+
+\paragraph{Transect along Pine Island Glacier trunk}
+
+Transect plots are shown along the main trunk of Pine Island Glacier from upstream point A to downstream point B (Fig.~\ref{fig:transect_AB}), and across flow from high elevation point C to low elevation point D (Fig.~\ref{fig:transect_CD}), with DeepBedMap\_DEM \citep{LeongDeepBedMap2020} and BedMachine \citep{MorlighemMEaSUREsBedMachineAntarctica2020} both showing the same broad trends.
+Modelled basal velocity ($u_b$) for BedMachine appears to fit closer to the ground-truth velocities observed by remote sensing methods \citep{MouginotMEaSUREsPhaseMap2019} than for DeepBedMap\_DEM (Fig.~\ref{fig:transect_AB}b, Fig.~\ref{fig:transect_CD}b).
+Effective pressure ($N$) tends to be lower for DeepBedMap\_DEM than that of BedMachine across both transect lines (Fig.~\ref{fig:transect_AB}c, Fig.~\ref{fig:transect_CD}c), except for near the grounding line close to point B (Fig.~\ref{fig:transect_AB}c).
+Slipperiness ($C$, Fig.~\ref{fig:transect_AB}d, Fig.~\ref{fig:transect_CD}d) and basal drag ($\tau_b$, Fig.~\ref{fig:transect_AB}e, Fig.~\ref{fig:transect_CD}e) fields are mostly comparable for both bed topographies.
+
+\begin{landscape}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[scale=0.65]{figures/chp3_fig2_inverted_bed_slipperiness}
+  \caption[Comparison of slipperiness over Pine Island Glacier for DeepBedMap and BedMachine]{
+    Comparison of slipperiness $C$ (friction coefficient) over Pine Island Glacier for DeepBedMap and BedMachine.
+    Ice flow direction is from top (point A) to bottom (point B).
+    Transect lines cut along flow from upstream point A to downstream point B, and transversely from high elevation point C to low elevation point D.
+    Plotted on an Antarctic Stereographic Projection with a standard latitude of 71°S (EPSG:3031).
+  }
+  \label{fig:slipperiness}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.65]{figures/chp3_fig1_inverted_bed_basal_drag}
+  \caption[Comparison of basal drag over Pine Island Glacier for DeepBedMap and BedMachine]{
+    Comparison of basal drag $\tau_b$ over Pine Island Glacier for DeepBedMap and BedMachine.
+    Ice flow direction is from top (point A) to bottom (point B).
+    Transect lines cut along flow from upstream point A to downstream point B, and transversely from high elevation point C to low elevation point D.
+    Plotted on an Antarctic Stereographic Projection with a standard latitude of 71°S (EPSG:3031).
+  }
+  \label{fig:basal_drag}
+\end{figure}
+\end{landscape}
+
+\begin{figure}[htbp]
+  \includegraphics[width=1.0\textwidth]{figures/chp3_fig_transect_plot_AB}
+  \caption[Transect plot along Pine Island Glacier trunk]{
+    Transect plot along Pine Island Glacier trunk from upstream point A to downstream point B.
+    Panels from top to bottom shows comparison of DeepBedMap\_DEM and BedMachine in terms of:
+    a) Bed elevation ($z_b$),
+    b) Ice surface velocity ($u_s$),
+    c) Effective pressure ($N$),
+    d) Slipperiness ($C$),
+    e) Basal drag ($\tau_b$).
+  }
+  \label{fig:transect_AB}
+\end{figure}
+
+\begin{figure}[htbp]
+  \includegraphics[width=1.0\textwidth]{figures/chp3_fig_transect_plot_CD}
+  \caption[Transect plot cutting across Pine Island Glacier trunk]{
+    Transect plot cutting across Pine Island Glacier trunk from high elevation point C to low elevation point D.
+    Panels from top to bottom shows comparison of DeepBedMap\_DEM and BedMachine in terms of:
+    a) Bed elevation ($z_b$),
+    b) Ice surface velocity ($u_s$),
+    c) Effective pressure ($N$),
+    d) Slipperiness ($C$),
+    e) Basal drag ($\tau_b$).
+  }
+  \label{fig:transect_CD}
+\end{figure}
+
+
+\clearpage
+\section{Discussion and Conclusion}
+
+% \subsection{Basal friction}
+The inverted basal drag ($\bar{\tau_b}$, Fig.~\ref{fig:basal_drag}) and slipperiness ($\bar{C}$, Fig.~\ref{fig:slipperiness}) over Pine Island Glacier is slightly higher for DeepBedMap\_DEM than BedMachine Antarctica, while effective pressure ($\bar{N}$, Fig.~\ref{fig:effective_pressure}) is generally lower (see Sec.~\ref{sec:results}).
+This mean difference in basal drag from using two different resolution beds is only \SI{11}{\pascal} and not very significant.
+In particular, this result is different to the findings of \citet{Kyrke-SmithRelevanceDetailBasal2018} who showed a reduction in basal drag (less skin drag) and slipperiness $C$ when using a higher resolution basal topography (more form drag).
+Several factors could account for this discrepancy.
+
+Firstly, the \SI{250}{\metre} difference in spatial resolution between DeepBedMap\_DEM \citep{LeongDeepBedMap2020} and BedMachine Antarctica \citep{MorlighemMEaSUREsBedMachineAntarctica2020} is much smaller than the \SI{950}{\metre} difference between DELORES DEM \citep{BinghamDiverselandscapesPine2017} and BEDMAP2 \citep{FretwellBedmap2improvedice2013}.
+This smaller resolution difference may mean that the differences in basal drag (Fig.~\ref{fig:basal_drag}) and slipperiness (Fig.~\ref{fig:slipperiness}) are less apparent.
+It could also be a higher resolution ($<= \SI{100}{\metre}$) bed is needed \citep[e.g.][]{Grahamhighresolutionsyntheticbed2017} before the effects of form drag are significant enough to affect slipperiness $C$ and hence basal drag $\tau_b$.
+Alternatively, the effects may have been masked when bed elevation is interpolated to the same \SIrange{250}{20000}{\metre} resolution mesh for both experiments (Sec.~\ref{sec:boundary_conditions}), and future studies should investigate such resolution dependence effects.
+
+Secondly, the use of a Schoof-type friction law in our inversion (see \ref{sec:methods}) instead of a Weertman-type sliding law as in \citet{Kyrke-SmithRelevanceDetailBasal2018} may mean that form drag from high resolution topography has less of an effect on basal drag $\tau_b$ (i.e. skin drag).
+Following the logic of \citet{Kyrke-SmithRelevanceDetailBasal2018}, a more accurate, high-resolution bed topography model (i.e. more form drag) should lower basal drag ($\tau_b$, i.e. skin drag).
+Theoretically, this would shift parts of glaciers flowing at a rate close to the transitional velocity ($u_t$) from a skin drag regime to a transitional or form drag regime \citep[see Fig.~\ref{fig:1.3},][]{Minchewuniversalglacierslip2020}.
+This logic implies that subglacial water which influences skin drag (related to form drag $\tau_b$) plays a less important role in ice dynamics when rougher, higher resolution bed elevation models (i.e. more form drag) are used, supporting studies where subglacial water inputs did not lead to significant speed ups in ice flow \citep[e.g.][]{SmithConnectedsubglaciallake2017}.
+
+However, observed velocities over most of Pine Island Glacier are $>\SI{100}{\metre\per\year}$ (see Fig.~\ref{fig:topo_and_speed}b) which suggests a predominantly Coulomb-type (skin drag based) flow regime rather than a Weertman-type (form drag based) flow regime \citep[see Fig.~\ref{fig:1.3},][]{Minchewuniversalglacierslip2020}.
+The decrease in basal drag $\tau_b$ (i.e. less skin drag) from using a higher resolution topography (i.e. more form drag) observed by \citet{Kyrke-SmithRelevanceDetailBasal2018} may be an artifact of using an unbounded Weertman-type sliding relation, as our experiments using a Schoof-type sliding law did not reproduce this behaviour.
+In fact, Fig.~\ref{fig:basal_drag} shows that using a higher resolution DeepBedMap\_DEM over the lower resolution BedMachine (i.e. more form drag) actually led to a slight increase in inverted form drag $\tau_b$ (i.e. more skin drag), contrary to the findings of \citet{Kyrke-SmithRelevanceDetailBasal2018}.
+The Weertman-style sliding law used by \citet{Kyrke-SmithRelevanceDetailBasal2018} in their inversion experiments lacks a parameterization of effective pressure $N$, thus excluding the possible effects of water cavitation \citep{BuddEmpiricalStudiesIce1979,GagliardiniFiniteelementmodelingsubglacial2007} or ice flow over deformable till \citep{Zoetsliplawglaciers2020}.
+Their Weertman stress exponent value of $m=3$ also differs from that of \citet{JoughinRegularizedCoulombFriction2019} who recommends using $m=8$ for a Weertman slip relation to best match observed velocity data over Pine Island Glacier.
+It thus remains to be seen whether our findings and those of \citet{Kyrke-SmithRelevanceDetailBasal2018} reporting on the effects of high resolution topography affecting skin drag can be generalized to more realistic sliding laws, and a wider area of the Antarctic Ice Sheet.
+
+The inversion study here over the main trunk of Pine Island Glacier used a Schoof-type sliding relation on two beds with different spatial resolutions and roughness (i.e. different form drag).
+Our findings suggest that skin drag (influenced by subglacial water and bed material properties) cannot be ruled out as an important factor in ice dynamics when using a high resolution bed, because basal drag ($\tau_b$, i.e. skin drag) did not noticeably decrease when more form drag was added with the use of a higher resolution (\SI{250}{\metre}) DeepBedMap\_DEM over the medium resolution (\SI{500}{\metre}) BedMachine (Fig.~\ref{fig:basal_drag}).
+% \subsection{Future directions}
+Future modelling work could include better parametrizations of effective pressure $N$, such as with an evolving subglacial hydrology model \citep[e.g.][]{SommersSHAKTISubglacialHydrology2018}.
+Inversion experiments should also be carried out on even higher resolution ($<=\SI{100}{\metre}$) bed elevation models \citep[e.g.][]{Grahamhighresolutionsyntheticbed2017}.
+A more thorough sensitivity analysis should be carried out to test different values of parameters such as $C_{\text{max}}$ in the Schoof sliding law, and also regularization parameters $\gamma_1$ and $\gamma_2$ (or others) to see how basal drag $\tau_b$ may change in magnitude or spatially.
+A prognostic forward model run using these high resolution bed elevation models with a Schoof-type sliding law and Full Stokes (or higher order) stress balance equations would also be useful to assess the potential effects of different basal traction and slipperiness fields on Antarctic grounding line migration and its resulting contribution to sea level rise.
