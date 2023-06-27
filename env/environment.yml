@@ -1,0 +1,41 @@
+name: phd_thesis
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pygmt>=0.9.0
+  - geopandas
+  - geoviews
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - pyvista
+  - pyvista-xarray
+  - harmonica
+  - verde>=1.8.0
+  - xarray
+  - tqdm
+  - rioxarray
+  - seaborn
+  - ipykernel
+  - cmocean
+  - numba
+  - boule
+  - plotly
+  - hvplot
+  - jupyter_bokeh
+  - jupyterlab
+  - jupyterlab_execute_time
+  - isort
+  - mamba
+  - pip
+  - pip:
+    # - git+https://github.com/fatiando/verde
+    # - git+https://github.com/mdtanker/antarctic_plots
+    - numba-progress
+    - tqdm-joblib
+    - jupyter-server-proxy
+    - trame
+    - --editable ../../antarctic_plots
+    - --editable ../../RIS_gravity_inversion
