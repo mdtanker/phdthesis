@@ -2,7 +2,7 @@
 - Author: [Matthew Tankersley](https://orcid.org/0000-0003-4266-8554)
 - Supervisors: [Huw Horgan](https://orcid.org/0000-0002-4836-0078) & [Fabio Caratori Tontini](https://orcid.org/0000-0002-2000-416X)
 
-This repository contains all of the latex files to general the [pdf of the thesis](). It also contains a [Jupyter notebook](thesis_figures.ipynb) for creating the figures for the intro and synthesis chapters.
+This repository contains all of the latex files to general the [pdf of the thesis](drafts/phdthesis_final.pdf). It also contains a [Jupyter notebook](thesis_figures.ipynb) for creating the figures for the intro and synthesis chapters.
 
 The final thesis PDF is available here: https://doi.org/10.26686/wgtn.24408304
 
