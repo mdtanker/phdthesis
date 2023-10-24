@@ -1,0 +1,168 @@
+\documentclass[12pt,twoside]{book}
+\usepackage[a4paper,width=150mm,top=25mm,bottom=20mm,headheight=14.5pt]{geometry}
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{2212}{-}
+\usepackage[natbib,style=apa,backend=biber,backref=true,sorting=nty,
+uniquelist=false,uniquename=false,maxcitenames=2,maxbibnames=99]{biblatex}
+
+\bibliography{thesis.bib}
+\renewcommand*{\bibfont}{\normalfont\footnotesize}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{svg}
+\usepackage{algorithm}% http://ctan.org/pkg/algorithm
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{nameref}
+\usepackage[T1]{fontenc}
+\usepackage[acronym,symbols,nogroupskip,nonumberlist,toc]{glossaries-extra}
+\usepackage{graphicx}
+\usepackage{wrapfig} % allow wrapping text around figures
+\usepackage{tcolorbox} % create fancy boxes
+\usepackage{pythonhighlight} % style python code
+\graphicspath{ {figures/} }
+\DeclareGraphicsExtensions{.eps,.pdf,.png}
+\usepackage[bookmarks]{hyperref}
+\usepackage[titletoc]{appendix}
+\usepackage{lscape}
+\usepackage{mathtools}
+\usepackage{esvect} % for vector notation
+\usepackage{siunitx}
+\usepackage{tabularx}
+\usepackage{textcomp}
+\usepackage{titlesec}
+\usepackage{tabularray}
+\usepackage{lineno}
+% \linenumbers
+% make figure captions small and bold
+\usepackage[font={footnotesize}]{caption}
+\usepackage[labelfont=bf]{caption}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+            {-2.5ex\@plus -1ex \@minus -.25ex}%
+            {1.25ex \@plus .25ex}%
+            {\normalfont\normalsize\bfseries}}
+\makeatother
+\setcounter{secnumdepth}{4} % how many sectioning levels to assign numbers to
+\setcounter{tocdepth}{4}    % how many sectioning levels to show in ToC
+
+% SIrange using em-dash
+\sisetup{range-phrase=--}
+\sisetup{range-units=single}
+
+% subsubsubsections paragraphs
+% \setcounter{secnumdepth}{3}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% glossary items
+% \makeglossaries[\acronymtype]
+% \newacronym{SLE}{SLE}{Sea level equivalent}
+%Not a Number (NaN)
+% \DeclareSIUnit\year{yr}
+
+\title{
+{
+% Constrained geopotential modelling of the ocean cavity and geology beneath the Ross Ice Shelf
+% Constraining the sub-Ross Ice Shelf geology through inversion of airborne geophysical data
+Airborne Geophysical Investigation beneath Antarctica's Ross Ice Shelf
+% Airborne Geophysical Investigation of Bathymetry and Geology beneath Antarctica's Ross Ice Shelf
+% Beneath the Ross Ice Shelf: Using Airborne Geophysics to Constrain Sub-Shelf Bathymetry and Geology
+% Beneath the Ross Ice Shelf: Using Airborne Geophysics to Constrain Hidden Bathymetry and Geology
+}\\
+
+
+
+{\large Antarctic Research Centre, Victoria University of Wellington}\\
+{\includegraphics[scale=0.5]{0_arc_logo.jpg}}
+}
+\author{Matthew Tankersley}
+\date{\today}
+
+\begin{document}
+
+\input{titlepage}
+
+\chapter*{Abstract}
+
+The Ross Ice Shelf controls the flow of ice into the ocean from catchments consisting of both the East and West Antarctic Ice Sheets. These catchments hold a volume of ice equivalent to $\sim$12 m of global sea level rise. To adequately understand how this ice will respond to a warming world requires knowledge of the properties and parameters which influence how the ice sheet behaves. These boundary conditions include fundamental knowledge of the Earth, such as the shape of the bed beneath the ice, the seafloor, and the geologic structures of the upper crust. Knowledge of the physiography and sub-surface geology is severely lacking beneath ice shelves due to their inaccessibility. 
+
+Here, we use airborne geophysical data from an extensive survey over the Ross Ice Shelf to better understand these boundary conditions. From the analysis of airborne magnetics data, we model the thickness of sediment, the shape of the crystalline basement, and the likely locations of faults throughout the crust under the Ross Ice Shelf. We find a continuous drape of sediment over the seafloor, including deep and narrow fault-bound sedimentary basins beneath the Siple Coast. 
+
+Using airborne gravity data, and distributed seismic constraints over the ice shelf, we develop and implement a gravity inversion to recover a higher-resolution bathymetry model beneath the ice shelf. This bathymetry model and our quantification of spatial uncertainty highlight locations likely important for sub-ice shelf ocean circulation and possible recent pinning points. In the process of these geophysical investigations, we reveal a wide range of insights relating to how bathymetry and geology play a critical role in the past, present, and future dynamics of the ice sheet, and how this region has developed over its tectonic history. 
+
+
+\section*{Plain language summary}
+
+The Ross Ice Shelf in Antarctica is a vast expanse of floating ice, hundreds of meters thick, which is connected to the ice on land. It plays a crucial role in slowing down the flow of ice from the Antarctic Ice Sheet into the ocean. Understanding how this ice will respond to a warming world requires knowledge of the Earth's properties that influence its behaviour. These properties include the depth of the seafloor beneath the ice shelf, the topography beneath the ice on land, and geological features like faults and rock types. However, accessing and surveying the sub-Ross Ice Shelf is challenging, leading to limited knowledge. 
+
+In this thesis, we utilized data collected during an airborne survey of the entire Ross Ice Shelf to investigate the depths of the seafloor and the underlying geology. By analyzing measurements of Earth's magnetic field across the ice shelf, we reveal the thickness of sediment beneath the seafloor. This is possible due to variations in magnetic properties between sediment and bedrock. The thickness of this layer of sediment ranges from tens of meters to several kilometers. Additionally, we determine the shape of the underlying bedrock, which helps identify probable fault locations. 
+
+We also utilized measurements of changes in Earth's gravity field across the ice shelf to estimate the depth of the seafloor, in a process called a gravity inversion. This method is feasible since variations in the underwater topography (bathymetry) result in small, measurable changes in Earth's gravity, due to the density difference between the seafloor and the water. 
+This bathymetry model, along with our assessment of uncertainties, identifies areas beneath the ice shelf that likely influence ocean currents as well as potential locations where the ice shelf was anchored to the bedrock in the recent past.
+
+Through these geophysical investigations, we gained valuable insights into how features of the underlying Earth have influenced the behaviour of the overlying ice in the Ross Ice Shelf region, both historically and in the future. This information enhances our understanding of the Ross Ice Shelf region and its interaction with the underlying Earth.
+
+% \chapter*{Dedication}
+% ---
+
+\chapter*{Acknowledgements}
+
+I would like to express my gratitude to the following individuals and organizations for their invaluable support and guidance throughout this thesis.\\
+
+First and foremost I would like to thank my advisors, Huw Horgan and Fabio Caratori-Tontini for their unwavering support, patience, and mentorship. Huw, I will always appreciate your effort to include me in the two field seasons to Antarctica. Those trips included some of my most valued experiences, which I have you to thank for. You have had an immeasurable impact on my development as a scientist yet gave me space to pursue my own interests and styles. Fabio, through your continuous encouragement and belief in my abilities you gave me the confidence to explore many challenging aspects of this thesis I would have otherwise omitted.\\
+
+To two of my supporting academics, Christine Siddoway and Kirsty Tinto. Without witnessing your dedication and enthusiasm for Antarctic science I would not have pursued this PhD. I hope for years of collaboration to come! To the various members of K863; Andrew, Jenny, Hamish, Will, Bob, and Caitlin, there couldn't have been a better group to spend so much time with in the deep field. Thank you for making those two trips such an incredible part of my PhD. To the open-source coding communities, including Fatiando, PyGMT and Software Underground, especially Wei Ji Leong, Santi Soler and Leo Uieda, thank you for the wonderful tools, tutorials, and individual support you have offered me throughout my journey of learning to code. \\
+
+To the various academics and staff on the 5th floor of the Cotton Building, thank you for years of great conversations over lunch, beers, or bike rides. Thank you to the friends who made living in and exploring NZ so great; Fran, Chris, Alanna, Marjo, Knut, Callum, Dina, Flo. Charlotte, thank you for the unconditional support throughout this journey, it would not have been possible or as enjoyable without you. To my family, thanks for the continuous encouragement and love from afar. Knowing I always had you all to count on back home gave me the stability I needed. \\
+
+To the reviewers of this thesis; Andrew Gorman, Simon Lamb, and Paul Winberry, thank you for your time spent thoroughly reading and contemplating on this work; your suggestions and discussions with me were much appreciated.
+
+Lastly, to the various funders of this research including several grants I have received, thank you for the support; GNS Science, the Antarctic Research Centre and Antarctica New Zealand.
+
+
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+% \printnoidxglossary[type=symbols,sort=use,style=long,title={List of Symbols}]
+% \glsaddall
+% \setglossarystyle{altlist}
+% \printglossary[type=\acronymtype]
+
+\chapter{Introduction}
+\label{ch:1}
+\input{chapters/01_introduction}
+
+\chapter{Airborne magnetic analysis: Basement depths and sediment thickness}
+\label{ch:2}
+\chaptermark{basement}
+\input{chapters/02_chapter}
+
+\chapter{Gravity inversion: a tool for bathymetry modelling}
+\label{ch:3}
+\chaptermark{inversion}
+\input{chapters/03_chapter}
+
+\chapter{Ross Ice Shelf bathymetry inversion}
+\label{ch:4}
+\chaptermark{bathymetry}
+\input{chapters/04_chapter}
+
+\chapter{Synthesis}
+\label{ch:5}
+\input{chapters/05_synthesis}
+
+\begin{appendices}
+    \input{chapters/06_appendix}
+\end{appendices}
+
+\printbibliography
+
+\end{document}

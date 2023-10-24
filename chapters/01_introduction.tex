@@ -1,201 +1,202 @@
-% The subglacial landscape and hydrology of Antarctica as mapped from space
 
 \section{Motivation}
+% Why is SLR important?
+% How much will SL rise?
+% Largest uncertainty from Antarctica
 
-What is the rate at which sea level will rise and affect coastal communities around the globe?
-Besides greenhouse gas emissions, a large uncertainty in the answer to that question lies in the Antarctic ice sheet's behaviour.
-By 2100, Antarctica is projected to contribute as little as \SI{0.03}{\metre} to as much as \SI{0.28}{\metre} sea level equivalent (\gls{SLE}) of water under a high emissions scenario \citep[RCP 8.5, Fig.~\ref{fig:0}f,][]{PortnerSummaryPolicymakers2019}.
-To narrow the range of this projection, one of the regions we need to understand is Antarctica's bed, the part hidden under the ice.
-This thesis synthesizes a collection of satellite remote sensing methods, using what we can see at the surface of the Antarctic continent, to deduce what is happening in the subglacial world below.
+Improving projections of the rate of global sea level rise in response to a warming world is vital for effectively mitigating future environment and socio-economic impacts \citep{durandsealevel2022}. A large portion of the uncertainties in modern and projected sea level rise is related to the contribution from the Antarctic Ice Sheet \citep[Figure \ref{fig:chp1_SLR}b, ][]{bamberice2022, edwardsprojected2021, slaterantarctic2018, otosakamass2023}. The Antarctic Ice Sheet contains a total volume of ice equivalent to 57.2 m of sea level rise \citep{fretwellbedmap22013}. Satellite observations show that Antarctica contributed $\sim7.4$ mm to mean sea level since 1992 \citep{otosakamass2023}, and of the various components of sea level rise, the contribution from Antarctica is accelerating the fastest \citep[Figure \ref{fig:chp1_SLR}a, ][]{neremclimatechangedriven2018}. Since the early 1990s, the sea level contribution from Antarctica has increased by 25\% \citep{otosakamass2023}. By the end of the century, Antarctica is projected to contribute between 0.03 and 0.28 m to mean sea level \citep[RCP 8.5,][]{intergovernmentalpanelonclimatechangeipccocean2022}. Optimal strategies for preparing coastal communities to best mitigate the impacts of rising sea level depends on where in this range of uncertainties the true sea level rise will be. Some of the uncertainty in how the Antarctic Ice Sheet will respond to a warming world stems from a lack of understanding of the complex interactions between the ice and the underlying earth \citep[e.g.][]{schlegelexploration2018, zhaobasal2018}.
 
-\begin{figure}[htbp]
-  \includegraphics[width=1.0\textwidth]{chp1_fig_SROCC_SPM1_Final_edit_AA-1.jpg}
-  \caption[Cryospheric contribution to sea level change by 2100]{
-    Contribution of the cryosphere to sea level change.
-    Modelled and observed historical changes in the cryosphere since 1950, and the projected future changes under low (RCP2.6) and high (RCP8.5) greenhouse gas emissions scenarios.
-    Figure adapted from SPM.1 in the Summary for Policy Makers, \gls{IPCC} Special Report on the Ocean and Cryosphere in a Changing Climate \citep{PortnerSummaryPolicymakers2019}.
-  }
-  \label{fig:0}
+% \begin{figure}[!ht]
+%     \includegraphics[width=.6\textwidth]{figures/chp1/bamber2022_SLR_uncertainty.jpg}
+%     \caption{Probability distributions for projected global sea level rise contributions for the year 2100 from the Greenland Ice Sheet (GrIS), West Antarctic Ice Sheet (WAIS), and East Antarctic Ice Sheet (EAIS), separated into three processes; discharge, accumulation, and runoff. Left and right sides of each distribution show the +2$^{\circ}$C and +5$^{\circ}$C global temperature trajectories, respectively. Figure from \citet{bamberice2022}.}
+%     \label{fig:chp1_SLR}
+% \end{figure}
+
+\begin{figure}[!ht]
+  \centering
+    \begin{subfigure}[t]{.54\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/chp1/Otosaka2023_mass_change.png}
+        \caption{}
+    \end{subfigure}
+    \begin{subfigure}[t]{.44\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/chp1/bamber2022_SLR_uncertainty.jpg}
+        \caption{}
+    \end{subfigure}
+  \caption[Past observations and future predictions of sea level rise]{Past observations and future predictions of sea level rise.
+  \textbf{a)} Observed cumulative mass change and sea level contributions from the various ice sheets. Data comes from satellite-altimetry estimates of volume changes, gravimetric estimates of mass changes, and quantification of input-output fluxes. Figure from \citet{otosakamass2023}.
+  \textbf{b)} Probability distributions for projected global sea level rise contributions for the year 2100 from the Greenland Ice Sheet (GrIS), West Antarctic Ice Sheet (WAIS), and East Antarctic Ice Sheet (EAIS), separated into three processes; discharge, accumulation, and runoff. Left and right sides of each distribution show the +2$^{\circ}$C and +5$^{\circ}$C global temperature trajectories, respectively. Figure from \citet{bamberice2022}.}
+    \label{fig:chp1_SLR}
 \end{figure}
 
-\section{Thesis context}
+\section[Influences on ice dynamics]{Influence of bathymetry, topography, and geology on ice dynamics\sectionmark{Influences on ice dynamics}}
+% \section{Influences on ice dynamics}
 
-Antarctica is a large continent, $53\times$ the size of New Zealand or $1.8\times$ the size of Australia, and satellite measurements are one of the best ways to cover the whole icescape.
-While the first satellite images of Antarctica were taken in 1964 by the Nimbus I satellite \citep{MeierNewestimatesArctic2013}, continuous modern-day observations only started in 1979.
-Forty years later, and there is now a wealth of openly available optical images of much of the continent, currently captured by NASA's Landsat 8 \citep[][]{RoyLandsat8Scienceproduct2014} and the European Space Agency (ESA)'s Sentinel 2 \citep{DruschSentinel2ESAOptical2012}.
-Changes to Antarctica's mass can be measured at kilometre-scale using the Gravity Recovery and Climate Experiment Follow‐On (GRACE‐FO, 2018-) satellites \citep{LandererExtendingGlobalMass2020}, and at metre-scales using the Ice, Cloud and land Elevation Satellite-2 \citep[ICESat-2, 2018-;][]{MarkusIceCloudland2017}.
-Also with radar instruments like Sentinel 1 \citep{AttemaSentinel1missionoverview2009} and Cryosat 2 \citep{WinghamCryoSatmissiondetermine2006}, cloud-free monitoring of the Antarctic surface has never been easier.
-Sadly, most of these satellites can only observe the surface of the Antarctic continent.
-There are physical constraints on designing an Earth orbiting satellite which can penetrate through both the atmosphere and kilometres of ice \citep{GogineniCubeSatTrainRadar2018,CulbergFirnClutterConstraints2020}.
-Arguably more is known about the subglacial landscape of Mars's polar caps \citep{OroseiRadarevidencesubglacial2018,ArnoldModeledSubglacialWater2019,LauroMultiplesubglacialwater2020} than that of our own planet Earth.
-Still, it is possible to infer about Antarctica's bed properties by combining satellite observations captured over large surface areas with what little is known about the bed at discrete sites targeted by oversnow observations, and this is the approach this thesis will take.
+The underlying Earth influences ice sheets through several mechanisms, which I group as those resulting from bedrock topography, geologic structures, and bedrock physical properties. Here I describe each of these categories of influences on the Antarctic Ice Sheet, followed by introducing the specific study area, the Ross Ice Shelf.   
 
-\subsection{Research Questions}
+\subsection{Bedrock topography}
+% confinement / slope controls speed ()
+% physiographic steering of ice / water (Holland model 2018, Tinto et al. 2019, halberstadticesheet2016, andersonseismic2019)
+% control on erosion / deposition (lee/stoss sides of ridges) (Cuffey and Paterson 2010)
+% buttressing of ice shelves ()
+% GIA feedbacks (couloncontrasting2021, barlettaobserved2018, kachuckrapid2020)
 
-To better understand the drivers of Antarctic ice flow, we present high spatial resolution ($<= \SI{250}{\metre}$) views of Antarctica's subglacial geography, as inferred from satellite detected ice surface changes.
-Novel machine learning and automated remote sensing techniques are applied to infer both the subglacial landscape and subglacial hydrological network of Antarctica.
-The 3 main research questions are as follows:
+% we need bathymetry
+% how to get bathy (airborne / over-snow radar / over-snow seismics / shipborne seismics)
+
+Offshore bathymetry and onshore bed topography exert several fundamental controls on how the Antarctic Ice Sheet behaves. Offshore, where the ice is floating, the influence of the bathymetry is limited to the guiding of ocean circulations. Bathymetric ridges have been shown to block, or re-direct, the inflow of melt-inducing waters to the ocean cavity beneath floating ice shelves \citep{derydtgeometric2014, zhaosillinfluenced2019, goldbergbathymetric2020}. Approximately 75\% of Antarctica's coastline is composed of these floating ice shelves, and 83\% of total ice discharged into the Southern Ocean from Antarctica is through these shelves, highlighting their significance to Antarctica's ice budget \citep{rignoticeshelf2013}. Of the 83\% of total ice loss from Antarctica through ice shelves, basal melt is responsible for approximately half \citep{greeneantarctic2022, rignoticeshelf2013}. Some of this melt occurs from surface waters, where bathymetry has little effect, but for many of the largest ice shelves, the majority of basal melt occurs along the deep grounding zone \citep{adusumilliinterannual2020}. Here, the melt-inducing water bodies are dense and flow into the ice shelf cavities along the seafloor \citep{hollandmodel2008, tintobathymetry2015}. Therefore, bathymetric features act to guide or block these circulations from reaching the grounding zone where they can melt the ice base. In addition to steering ocean currents, bed topography, in regions of grounded ice, acts to steer the ice flow. \\
+
+As revealed by extensive seismic and swath bathymetry data in Antarctica's Ross Sea (Figure \ref{fig:chp1_data_coverage}a), the dynamics of an advancing or retreating ice sheet are predominantly controlled by the physiography of the bed \citep{halberstadticesheet2016, andersonseismic2019}. If large troughs and banks exist, advancing ice is initially confined by these features, while the banks remain ice-free \citep{andersonross2014}. Eventually, after the ice has covered the entire region, the retreat is initially confined to these narrow troughs, while the banks retain grounded ice for much longer \citep{andersonseismic2019, halberstadticesheet2016}. As the ice thins or retreats into regions of deeper bed topography, these banks remain grounded, while the rest of the ice sheet decouples from the bed, begins floating and forms an ice shelf \citep{shipplate1999}. This remaining grounded ice on bathymetric highs forms pinning points. \\
+
+\begin{figure}[!ht]
+    \centering
+    \includesvg[inkscapelatex=false,width=0.98\textwidth]{chp1/data_coverage}
+    \caption[Summary of existing geologic and geophysical data for Antarctica]{Summary of existing geologic and geophysical data for Antarctica. \textbf{a)} Map of data coverage in Antarctica indicating outcropping regions, drill core sites, seismic and  magnetotelluric surveys, and bed elevation data points of Bedmap3, mostly from airborne radio-echo sounding \citep{frémandantarctic2022}. \textbf{b)} Various methods of acquiring information sub-surface geology. Figure adapted from \citet{aitkenantarctica2023}.}
+    \label{fig:chp1_data_coverage}
+\end{figure}
+
+Pinning points are regions of locally grounded ice within a floating ice shelf \citep{matsuokaantarctic2015}. The friction between the bed and ice base at these points impart a critical resisting force to the discharge of upstream ice; an effect known as buttressing \citep{thomasice1979, dupontassessment2005}. Since the base of ice shelves is flat relative to the underlying bathymetry, the morphology of the seafloor is the dominant control of the location and geometry of these pinning points. The bedrock topography has been thought to be relatively constant over a millennial timescale, meaning that pinning points' geometries vary mostly by temporal changes in the ice thickness. However, recent studies of glacial isostatic adjustment, the vertical rebound of the Earth following deglaciation, throughout West Antarctica have demonstrated high spatial variability and short (multi-centennial-to-millennial) timescales for these vertical land movements \citep{couloncontrasting2021, barlettaobserved2018, kachuckrapid2020}. As the bedrock beneath portions of West Antarctica continues to rebound, the number and extent of these pinning points will likely increase, possibly providing a stabilizing effect to the ice sheet. \\
+
+All of these above controls on ice dynamics imparted by the physiography of the bed rely on accurate knowledge of bed topography and bathymetry. Due to the inherently challenging nature of Antarctic fieldwork, and the logistical challenge of measuring bed elevations beneath thick ice, 50\% of the Antarctic Ice Sheet is more than 5 km from the nearest measurement of bed elevation \citep[Figure \ref{fig:chp1_data_coverage}a,][]{morlighemdeep2020}. This value increases greatly if the floating ice shelves are included. For grounded ice, the dominant techniques for direct measurements of bed elevation data are airborne radio-echo sounding, over-snow radar, and seismic surveying \citep[Figure \ref{fig:chp1_data_coverage}b,][]{fretwellbedmap22013}. In the open ocean, bathymetry data are typically collected with ship-borne multibeam echo sounding, seismic surveying (Figure \ref{fig:chp1_data_coverage}b), or from satellite-altimetry. Acquiring bathymetry data beneath floating ice shelves presents a particular challenge. The efficient shipborne methods are unavailable since the ice shelves are persistent year-round, unlike the sea ice in the open ocean. Radio-echo sounding, either ground-based or airborne, cannot image through the water column. Direct observations through drilling are possible and exist, but typically require drilling through 100's to 1000's of meters of ice \citep[Figure \ref{fig:chp1_data_coverage},][]{cloughross1979, pattersonsensitivity2022}. Autonomous underwater vehicles (Figure \ref{fig:chp1_data_coverage}b) present another option, but are expensive and have limited range \citep{dowdeswellautonomous2008, nichollsmeasurements2006}. The only feasible method of direct observations of sub-ice shelf bathymetry is over-snow seismic surveying (Figure \ref{fig:chp1_data_coverage}b). However, for the vast area of many ice shelves, even sparse coverage ($\sim50$ km spacing) of seismic points across the ice shelf takes several field seasons of data acquisition \citep{bentleyross1984}. 
+
+
+\subsection{Geologic structures}
+% GHF (larourice2012, pollardsensitivity2005, seroussiinfluence2017)
+% GHF, localization from faults (goochpotential2016, begemanspatially2017)
+% radiogenic heat from crust (burton-johnsongeothermal2020)
+% storage / transport of groundwater (christoffersensignificant2014)
+% confinement of water -> increased pore pressure (tulaczykbasal2000, bellwidespread2011)
+% enhanced GIA within fault-bound basins (peltierglacial2022, steffenglacially2021)
+
+% we need faults, basement margins, aquifer locations
+% how to get this (gravity, magnetics, magnetotellurics)
+Additional influences on the overriding ice include the delivery of geothermal heat and subglacial water to the ice base and the vertical deformation of the bedrock in response to changing ice loads. Geothermal heat influences ice dynamics through several mechanisms; 1) increasing the temperature of the ice which lowers its viscosity, leading to  enhanced flow via internal deformation \citep{llubesrelations2006}, 2) meltwater lubrication of the bed reduces friction, enhancing flow \citep{pollardsensitivity2005}, and 3) increasing the ability of the bed to deform via increased pore-fluid pressure, which increases ice flow \citep{tulaczykbasal2000}. The latter two effects, while enhanced by geothermal heat through the melting of ice, also occur with simply the presence of liquid water at the ice-bed interface. As briefly mentioned in the above section, glacial isostatic adjustments of the bedrock following changes in ice load can influence the ice by altering the geometry and locations of grounded ice. \\
+
+Each of these effects; geothermal heat flow, subglacial water availability, and glacial isostatic adjustment, are in turn influenced by geologic structures within the upper crust. A portion of subglacial water comes from either transport along the ice-bed interface, or from the melting of the ice base. However, an often overlooked component of the subglacial hydrologic system is groundwater stored in deep sedimentary aquifers. For example, hydrologic modelling of the ice streams of the Siple Coast (Figure \ref{fig:chp1_data_coverage}a) estimated the components of the hydrologic budget to be 8\% from local basal melting, 47\% from inflow from the ice sheet interior, and 45\% from groundwater reservoirs \citep{christoffersensignificant2014}. These modelling observations of extensive groundwater have been recently verified beneath the Whillans Ice Stream by a magnetotelluric survey. This survey imaged an extensive groundwater aquifer within a sedimentary basin, containing at least an order of magnitude more water than the shallow hydrologic system \citep{gustafsondynamic2022}. The vertical flow of this basinal groundwater is controlled by the pressure of the overriding ice sheet. As this overburden pressure decreases with thinning ice, groundwater is discharged to the ice base \citep{goochpotential2016, lisedimentary2022}. This discharge is likely concentrated along pre-existing weaknesses or impermeable surfaces, such as fault damage zones, or the margins of crystalline basement \citep{joliegeological2021}. During this ice-induced hydraulic unloading, regional geothermal heat is advected along the fluid pathways, leading to potentially highly elevated heat flow delivered to the ice base \citep{ravierglaciohydrogeology2018, lisedimentary2022}. In addition to concentrating both subglacial water and geothermal heat, these faults, or more generically, regions of the crust which have experienced recent faulting, will respond differently to stresses induced by glacial isostatic adjustment. To a first order, the isostatic response of the solid-earth to changing ice load is controlled by the rheology of the mantle \citep{whitehousesolid2019}. However, on a more local scale, pre-existing faults are shown to accommodate glacial isostatic rebound-induced stresses \citep{peltierglacial2022, steffenglacially2021}. \\
+
+To be able to understand the above influences on the ice, we must have some fundamental knowledge of the geologic structures beneath the ice. This includes knowing where sedimentary basins, and possible aquifers within, are located, where faults likely intersect the ice base, and the geometry of the crystalline basement. Each of these components is difficult to image directly. Drilling, seismic surveys, or geologic analysis of rock outcrops all provide valuable information but are not feasible to cover wide regions (Figure \ref{fig:chp1_data_coverage}). Indirect methods are therefore needed. These include techniques such as gravity, magnetic, or electromagnetic methods. Each of these techniques records measurements of the spatial variation of a potential field, such as the Earth's gravity, magnetic, or electromagnetic fields. These fields are all partially dependant on a physical Earth property, such as rock density, magnetic susceptibility, or resistivity. From these relationships, sub-surface geologic information can be modelled. 
+
+
+\subsection{Basal roughness}
+% onset of ice streams (bellinfluence1998, anandakrishnaninfluence1998)
+% effective resistance of pinning points (Still mechanical 2019)
+% ice streaming (alleydeformation1986, )
+% erodibility/deformation of till (alleydeformation1986)
+
+% we need sediment thickness
+
+The last major influence on the ice from the underlying Earth I present is the roughness of the bed which the ice sheet flows over. This bed roughness is important on both a micro and macro scale. At a micro-scale, roughness is determined by the material of which the bed is composed. A bed of erosion-resistance crystalline basement, for example, can greatly hinder the flow of ice. This material results in high friction with the ice base, slowing the sliding of ice \citep{bellinfluence1998}. Conversely, beds composed of fine-grained tills allow fast ice flow. This fast flow is predominantly due to deformation within the till as the ice flows \citep{alleydeformation1986}. In between the end members of crystalline basement and fine grain till are lithified sedimentary rocks, for example. This type of bed may initially lead to high friction with the ice, but due to their high erodability, sedimentary rock will quickly generate till \citep{anandakrishnaninfluence1998}. A macro-scale view of basal roughness is also important for ice dynamics. As observed at the Siple Coast (Figure \ref{fig:chp1_data_coverage}a) ice streams, there is a strong inverse relation between bed roughness, from scales of 5 to >40 km, and ice stream velocities \citep{siegertmacroscale2004}. The composition of the bed also plays an important role in the total effective resistance imparted on ice flow from pinning points \citep{stillmechanical2019}. \\
+
+To best quantify the effect of basal roughness on ice dynamics, information on the material properties of the bed is needed. While sediment samples beneath the ice yield valuable information, they may only represent the bed at the specific location where they were sampled. The most fundamental information needed is the generic rock type of the bed, namely, is the bed loose, unconsolidated sediment, lithified sedimentary rock, or crystalline rock? \citet{aitkenantarctica2023} provide a detailed review of Antarctica's sedimentary basins, and the methods employed to determine both the presence of sediment and the sediment thickness. These methods, as well as the methods described in the above sections, are shown in Figure \ref{fig:chp1_data_coverage}, as reproduced from \citet{aitkenantarctica2023}. 
+
+With the dominant influences from the underlying Earth on ice dynamics laid out, I will now introduce the study area of this thesis, Antarctica's Ross Ice Shelf. 
+
+
+\section{Ross Ice Shelf}
+% what is the RIS? 
+% size, location, map
+% importance for AIS and SLR
+% past fast and large GL retreat
+
+The Ross Ice Shelf is Antarctica's largest ice shelf ($\sim480,000$ km\textsuperscript{2}), Figure \ref{fig:chp1_data_coverage}). It is situated between the Transantarctic Mountains and Marie Byrd Land. It buttresses a catchment of ice that flows from both the East and West Antarctic Ice Sheets. This catchment contains 11.6 m of global sea level equivalent \citep{fretwellbedmap22013, rignotantarctic2011, tintoross2019}. Compared to many other ice shelves, the Ross Ice Shelf is currently relatively stable \citep{moholdtbasal2014, rignoticeshelf2013}. However, geologic evidence from throughout the Ross Sea and the Siple Coast shows that in the past $\sim$7,000 years the shelf has experienced rapid destabilization, disintegration, and large-scale grounding line retreat \citep[e.g.,][]{venturellimid2020, naishobliquitypaced2009}. This major Holocene retreat is thought to have been primarily caused by ocean forcings \citep{lowrydeglacial2019}, as bathymetric troughs guided in the inflow of melt-inducing ocean circulations \citep{tintoross2019}. Once destabilized, the grounding line retreat from the outer continental shelf to the present-day location was controlled primarily by the physiography and geology of the bed \citep{halberstadticesheet2016, andersonseismic2019}. This shows the importance of the underlying Earth's influence on the dynamics of the Ross Ice Shelf. 
+
+% The Ross Ice Shelf sits between the geologically distinct provinces of East and West Antarctica. 
+% East Antarctica consists primarily of uniform, thick and stable cratonic crust of Precambrian origins \citep{fitzsimonsreview2000}. 
+% Conversely, West Antarctica is the amalgamation of discrete continental blocks with varied and complex histories \citep{jordangeological2020}. 
+% These blocks were created or accreted along the paleo-pacific subduction zone. 
+% Subduction and much of the associated magmatism waned by the early Cretaceous \citep{siddowaymicroplate2010}, likely leaving the paleo-Ross Embayment region as an elevated and thick section of crust \citep{huertatransition2007, bialasplateau2007}. 
+% Subsequently, back-arc extension began, initiating this region's main phase of West Antarctic Rift System extension \citep{siddowaygeology2021}. This distributed extension resulted in over 1000 km of stretching in less than 20 million years () of  and the opening of the Southern Ocean lebreakup of the 
+% In the mid-Cretaceous back-arc extension began, leading to the breakup of Gondwana and the formation of the West Antarctic Rift System \cite{jordangeological2020}. 
+% Extension with the West Antarctic Rift System 
+
+% this convergent margin was fully transformed into a After this subduction ceased, the convergent margin transistioned into a  
+
+% In general, West Antarctic has.  and has a complex history of,  preconsists predominantly of continental-shield of East Antarctica  is consists of thick cratonic crust, 
+
+% The modern-day geology and physiography of the Ross Ice Shelf region are the result of a long history of geologic, tectonic, and glacial processes. TThe crust of the region
+
+% The Ross Ice Shelf spans a large region of low-lying topography bound to the east and west by mountains. The geologic history of the region is summarized by   covers a region of thhe  Ross Ice Shelf region can be generalized as an extensively thinned and subsided an
+% The region is bound to the south and west by the high and steep topography of the Transantarctic Mountains.  to the north by the is The  Figure \ref{fig:chp5_syntheis_figure}
+
+
+\subsection{Past investigations}
+% we stated earlier that bathymetry / basement / ... was fundamental to understanding the geologic interactions with the overriding ice.
+% Lit review of RIS data
+% what do we still need
+%     uncertainty in bathymetry
+%     basement topography
+%     sediment thickness
+%     likely locations of faults and aquifers
+
+By examining various influences on ice dynamics, I identified some key data needed to understand these influences. These data included onshore bed topography, offshore bathymetry, the distribution of sediment, and upper crustal structures such as faults and the topography of the basement. Here, I summarize the history of data collection in the Ross Ice Shelf region specific to these geologic and physiographic features. Geological and geophysical exploration has occurred in the Ross Embayment for over a century. The earliest of these include the 1901-1904 \textit{Discovery} expedition, the 1907-1909 \textit{Nimrod} expedition, and the 1910-1913 \textit{Terra Nova} expedition. These expeditions laid the groundwork of interest in the Ross Embayment from a scientific perspective. The first major survey of the Ross Ice Shelf was part of the 1957-1959 International Geophysical Year traverses. The three over-snow traverses all included a portion of the ice shelf and collected radar, gravity, and seismic data to determine ice thickness, surface elevation, and bed elevation \citep{craryoversnow1959}. These surveys produced early evidence of the extensive below-sea-level bed, thin crust, and distinct geologic provinces throughout West Antarctica \citep{bentleystructure1960}. In the 1970s the Ross Ice Shelf Geophysical and Glaciological Survey \citep[RIGGS,][]{bentleyross1984} consisted of a systematic grid of seismic surveys over the entire ice shelf with an average spacing between survey points of 55 km. After the RIGGS survey, there were a total of $\sim223$ point-source seismic surveys across the ice shelf, all yielding single-point sub-ice shelf bathymetry depths. Of these, eight reported sediment thicknesses beneath. Several faults were hypothesized, based on 2D gravity profiles conducted at many of the stations \citep{greischaranalysis1992}. Since the 1970s, there have been many additional local surveys on the ice shelf, but these have been focused along the grounding zones \citep[e.g.,][]{horganpoststagnation2017, mutobathymetry2013, pattersonsensitivity2022, sternseismic1994, tenbrinkgeophysical1993, wannamakeruplift2017}. The next, and most recent major data-collection campaign on the Ross Ice Shelf was the ROSETTA-ice project. \\
+
+% Scientific cruises to the Ross Sea in the 1970s began to discover the horst - graben nature of the crust, with km's-thick sedimentary basis separated by N-S shallow basement ridges \citep{houtzseismic1973}. Drilling at sites 270, 271, 272, 273 ...
+
+The Ross Ocean and ice Shelf Environment, and Tectonic setting Through Aerogeophysical surveys and modelling project \citep[ROSETTA-ice,][]{tintoross2019}, was a 3-season (2015-2017) airborne geophysical survey of the Ross Ice Shelf. It flew a regular grid of flight lines, with nominal N-S and E-W line spacings of 10 and 55 km, respectively. During each flight, various geophysical data were collected, including ice-penetrating radar, gravity, magnetics and laser altimetry. So far, these ROSETTA-ice data have been used to begin characterizing the geologic nature of the crust \citep{tintoross2019}, to model the depths to the sea floor \citep{tintoross2019}, and to quantify basal melt \citep{dasmulti2020}. \\
+
+Following 60 years of surveying and exploration of the Ross Ice Shelf, our fundamental understanding of the subglacial geology and physiography is still lacking. For an area almost twice the size of New Zealand, we have approximately 8 locations of reported sediment thickness, several hypothesized locations of faults, gaps of over 100 km without bathymetric depths, and limited understanding of our uncertainty in the bathymetry where it has been modelled/interpolated. I propose several research questions which I aim to answer in this thesis.
+
+% What do we know of these sub-RIS geology / physiography characteristics?
+%     - low resolution bathymetry
+%     - no idea of bathymetry uncertainty
+%     - very limited knowledge of sediment distribution
+%     - no mapped, or even inferred faults beneath the ice shelf
+    
+% What are the main knowledge gaps?
+%     - don't have accurate bathymetry knowledge
+%     - no idea of spatial uncertainty of bathymetry
+%     - what are current pinning points composed of? sediment or basement?
+% lack of geologic info on RIS, and why it matters
+
+\section{Research questions}
+% What are the important geologic controls in the ice for the RIS region?
+%     - bathymetry controls basal melt
+%     - pinning points, even small ones, control resistive stress
+%     - GIA control on retreat / readvance
+%     - sediment vital for ice streaming
+    
+The aim of this thesis is to improve our knowledge of boundary conditions beneath the Ross Ice Shelf in order to better understand the past, present, and future interactions between the ice, ocean, and underlying earth. I aim to accomplish this by answering the following questions:
 
 \begin{enumerate}
-  \item How can we integrate existing high spatial resolution remote sensing products to boost the resolution of existing bed elevation maps of Antarctica?
-
-  \item What effect does a rough surface, high-resolution (\SI{250}{\metre}) bed topography have on the friction parameters of an ice sheet model?
-
-  \item Where does water drain and accumulate underneath the Antarctic Ice Sheet, how much volume is mobilized, and at what timescales do these processes occur?
+    \item 
+    What is the geologic structure of the upper crust beneath the Ross Ice Shelf?
+    If there are sediments, what is their thickness and distribution? 
+    Where are the major faults likely located? 
+    \item 
+    How can bathymetry beneath an ice shelf best be modelled? 
+    Are there further improvements that can be made to the currently employed gravity-inversion process? 
+    What are the predominant sources of uncertainty, and how can these be limited? 
+    \item 
+    How deep is the bathymetry beneath the Ross Ice Shelf and where are we most and least certain about it? 
+    \item 
+    What are the geologic controls on the Ross Ice Shelf's stability? 
 \end{enumerate}
 
-The products of this thesis will be a revised continent-wide map of Antarctica's bed topography and subglacial hydrology, including a revised inventory of active subglacial lakes.
-Building on top of this, are regional-scale derived products of basal friction and a time-series of ice volume displacement analyzed at select drainage basins.
-Taken together, these datasets form a foundation enabling accurate modelling of overland ice flow.
+\section{Outline}
 
-\subsection{Outline}
+This thesis is comprised of five chapters. \\
 
-This thesis is comprised of five chapters.
+This chapter, Chapter 1, establishes the context behind the research, introduces the study region, proposes a series of research questions, and contains an outline of this thesis. \\
+%It introduces the Ross Embayment region of Antarctica and provides a history of scientific investigations in the region. Additionally, it provides a brief overview of the geophysical exploration methods used throughout the research.
 
-Chapter 1 establishes the context behind this research, the three research questions, and also the outline you are reading now.
-It also contains an introduction to the influence of subglacial topography and subglacial hydrology on ice flow.
+Chapter 2 is adapted from a journal article published in Geophysical Research Letters  \citep{tankersleybasement2022}, reformatted to be included in this thesis. 
+It presents a model of the basement topography, and overlying sediment distribution, beneath the Ross Ice Shelf. I use airborne magnetic data from the ROSETTA-ice project, and a depth-to-magnetic source technique to model the sediment-basement contact. This reveals large-scale, fault-controlled extensional basins throughout the sub-Ross Ice Shelf crust. From this, I am able to draw a wide range of inferences on the likely influence of this basement topography on the past, present, and future ice sheet, as well as some tectonic implications. These results provide the first holistic view of the upper crust beneath the Ross Ice Shelf. \\
 
-Chapter 2 is adapted from a journal paper submitted to The Cryosphere \citep{LeongDeepBedMapdeepneural2020}, reformatted to fit in this thesis.
-It starts with an introduction to the field of deep learning in the context of geospatial science.
-The chapter then provides a detailed look into the construction of a convolutional neural network architecture to generate a super-resolution (\SI{250}{\metre}) bed elevation map of Antarctica from a low resolution (\SI{1000}{\metre}) BEDMAP2 input and other remote sensing observations of the ice surface.
+Chapter 3 details my development of a method to model the depth to the sea floor beneath a floating ice shelf. This method is a gravity inversion, where observations of Earth's gravitational field are used to model bathymetry beneath an ice shelf. I develop open-source Python code with the aim for other researchers to utilize the inversion. I test the inversion against a suite of synthetic and semi-realistic data. This confirms the feasibility of using gravity data to attain bathymetry depths in an Antarctic setting. Additionally, these synthetic tests reveal the relative importance of various aspects of a gravity inversion. These include the importance of \textit{a priori} constraints on the bathymetry, the large errors which can be introduced during the removal of the regional component of gravity, and several suggestions for optimal survey design to minimize error in the resulting bathymetry model. The use of Monte Carlo simulation provides both a spatially variable estimation of uncertainty in the resulting bathymetry and an estimate of the various sources of this uncertainty. \\
 
-Chapter 3 uses the neural network generated super-resolution Antarctic bed elevation map to perform an ice sheet model basal inversion over Pine Island Glacier.
-In this chapter, we examine the inverted properties of basal drag, effective pressure and friction coefficient using two bed elevation models of different spatial resolutions.
-The output of this exercise is to analyze the effects of using a rougher bed on ice flow modelling.
+Chapter 4 uses the inversion algorithm developed in Chapter 3 to create a new bathymetry model and associated uncertainties beneath the Ross Ice Shelf. The model shows some major differences with past bathymetry models, highlighting areas of the ice shelf that should be carefully considered in future surveys. These include a deeper bathymetric trench along the Transantarctic Mountains, a thicker ocean cavity along a portion of the ice front which may allow the incursion of warm ocean waters and a thicker ocean cavity proximal to the Siple Coast grounding line. My uncertainty analysis shows the region of highest uncertainties is along the Transantarctic Mountain Front. Within this chapter, we perform a comprehensive review of past bathymetry-gravity inversions, for all Antarctic studies, and several Greenland studies. This highlighted some key differences, which I believe I have improved on. \\
 
-Chapter 4 looks into the active subglacial hydrology system of Antarctica using ICESat-2 laser altimetry.
-A revised and automated method for building an active subglacial lake inventory is described, with details on the timing of subglacial lake drainage and filling events, and the estimated volume of water exchanged.
-The increased spatiotemporal resolution of these subglacial hydrological maps, combined with an improved subglacial topography, is used to examine the drivers of Antarctic ice flow.
+Chapter 5 presents a synthesis of the 3 research chapters, and provides a discussion of the research questions. Various future works are suggested and the main conclusions of this thesis are presented. The research chapters in this thesis were written with the intent to publish, including Chapter 2 which is already published. Therefore, I have chosen to keep the style of writing consistent throughout the thesis, with the use of plural possessive pronouns ("we") instead of singular ("I"). 
 
-Chapter 5 provides a discussion of the 3 research questions, and implications for future work.
-It also presents the main conclusions of this thesis.
+\section[Data and Code]{Data and Code Availability Statement\sectionmark{Data and Code}} \label{chp1_open_source}
 
+In an effort to adhere to the principles of FAIR scientific investigations, Findability, Accessibility, Interoperability, and Reusability \citep{wilkinsonfair2016}, we have used only open-access data and published all code\footnote{This excludes one component of Chapter \ref{ch:2} which was performed with proprietary software.} used in this thesis. Here we describe where this code and data can be found. All data used from other studies has been cited within each chapter and can be accessed through their respective DOIs. However, most of these datasets were downloaded using the Python package Antarctic-Plots \citep{tankersleyantarctic2023}. I developed this package during this PhD to help with several aspects of conducting research related to Antarctica. See Appendix \ref{appendix:D} for an overview of the capabilities of Antarctic-Plots. Analysis in this study was executed on a computer with an x86\_64 processor with a maximum clock frequency of 2600 MHz with 56 physical cores, 112 logical cores, and 1TB of RAM, using the Operating System Linux-Ubuntu. 
 
-\section{Background}
+\paragraph*{Chapter \ref{ch:2}}
+All of the Python code used to perform the analysis and create the figures of Chapter \ref{ch:2} is available from the following GitHub repository; \url{https://github.com/mdtanker/RIS_basement_sediment}, and the version of the repository used in the published paper is archived at \url{https://doi.org/10.5281/zenodo.6499863} \citep{tankersleymdtanker2022}.
 
-Glaciers and ice sheets move in three main ways:
-1) internal deformation of the ice due to gravity
-2) sliding of the ice over the basal substrate
-3) deformation of the basal substrate.
+\paragraph*{Chapters \ref{ch:3} \& \ref{ch:4}}
+The gravity inversion Python code, the workflow conducted within Jupyter Notebooks, and the creation of all the figures is available from the following GitHub repository; \url{https://github.com/mdtanker/RIS_gravity_inversion} and the version of the repository used in this thesis is archived at \url{https://doi.org/10.5281/zenodo.8084469} \citep{tankersleymdtanker2023}. 
 
-The latter two processes can be collectively termed as basal slip \citep{Cuffeyphysicsglaciers2010}.
-While the bed topography of Antarctica can change significantly over geological time \citep[e.g.][]{HochmuthEvolvingPaleobathymetryCircum2020}, the amount of water available to slide a glacier is more dynamic and can act on sub-annual to annual timescales \citep[e.g.][]{SiegfriedEpisodicicevelocity2016}.
-Much focus has been placed on the importance of subglacial water on ice dynamics, such as the draining and filling of subglacial lakes \citep[e.g.][]{Smithinventoryactivesubglacial2009,SiegfriedThirteenyearssubglacial2018} and glacial surges due to rainfall events \citep[e.g.][]{IkenUpliftUnteraargletscherBeginning1983}.
-Another contributor is the structure of the basal topography that exerts a drag on the ice-rock contact surface \citep[e.g.][]{Kyrke-SmithRelevanceDetailBasal2018}.
-The base of the ice sheet is difficult to observe, as they require oversnow seismic or radar surveys \citep[e.g.][]{HolschuhLinkingpostglaciallandscapes2020} or direct drilling access \citep[e.g.][]{TulaczykWISSARDSubglacialLake2014}.
-In contrast, the surface of the ice sheet can be more readily examined using satellites and other remote sensing instruments \citep[e.g.][]{HowatReferenceElevationModel2019,MouginotContinentWideInterferometric2019}.
-The study of basal slip at local to regional scales, from sliding due to water and bed deformation, varies with specific conditions at the bed, and can be posed as a geographical question:  % thesis statement
-1) Where in Antarctica does bed topography not have an important control on ice flow (i.e. water is more important).
-2) Where in Antarctica does bed topography have an important control on ice flow (i.e. a better bed is needed).
-
-To answer this question, we first require an accurate geographic model of the bed, a Digital Elevation Model with sufficient fine-scale structures \citep[Chp.~\ref{ch:2},][]{LeongDeepBedMapdeepneural2020}. Current generations of Antarctic bed elevation models such as BEDMAP2 \citep{FretwellBedmap2improvedice2013} are overly smooth by necessity.
-BEDMAP2 is derived from Radio-echo sounding (\gls{RES}) observations, the data was interpolated to a 5 km grid, and then to a 1 km grid.
-BedMachine Antarctica \citep{MorlighemMEaSUREsBedMachineAntarctica2020} is generated by mass conservation and is also smoothed in such a way that fails to capture the inherent sub-kilometre scale roughness of an ice sheet's topograhy as seen in paleo-ice sheets uncovered in the modern day.
-
-% TODO make into horizontal plot perhaps
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}[t]{0.65\textwidth}
-    % TODO get DeepBedMap figure with ground-truth instead of groundtruth
-    \includegraphics[width=1.0\textwidth]{chp2_fig6_elevation_roughness_transect}
-    \label{fig:1.2a}
-  \end{subfigure}
-  \vfill
-  \begin{subfigure}[t]{0.65\textwidth}
-    \includegraphics[width=1.0\textwidth]{chp1_fig_essd-12-2765-2020-f06}
-    \label{fig:1.2b}
-  \end{subfigure}
-  \caption[Comparison of bed elevation products along ground-truth transects]{
-    Comparing \gls{RES} bed elevation measurements against different bed products along transect lines in Antarctica.
-    % TODO ref{chp:}
-    Top panel is over Thwaites Glacier, showing super resolution DeepBedMap\_DEM \citep[purple;][]{LeongDeepBedMapdeepneural2020}, Ground-truth Operation IceBridge \gls{RES} points \citep[orange;][]{ShiMultichannelCoherentRadar2010} and BedMachine Antarctica \citep[green;][]{MorlighemDeepglacialtroughs2019}.
-    Bottom panel is over Princess Elizabeth Land, showing ICECAP2 \gls{RES} transects (black), BEDMAP2 (blue), BedMachine (red), and ICECAP2 DEM (green) \citep[Fig. 6 from][, licensed under \href{https://creativecommons.org/licenses/by/4.0}{CC-BY-4.0}]{CuiBedtopographyPrincess2020}.
-  }
-  \label{fig:1.2}
-\end{figure}
-
-The smoothness of existing interpolated bed topography products at the sub-kilometre scale is evident when looking along a transect profile.
-In Fig.~\ref{fig:1.2}, we show how fine scale roughness exists in ground-truth radio-echo sounding (\gls{RES}) bed picks.
-Continent-wide bed elevation products like BEDMAP2 and BedMachine Antarctica fail to capture this roughness.
-Newer regional products over the Weddell Sea sector \citep{Jeofrynewbedelevation2018} and Princess Elizabeth Land \citep{CuiBedtopographyPrincess2020} provide more accurate interpolated bed elevations but are still unable to resolve short-wavelength bed roughness.
-Thus, we require a method applicable to the entire continent that retains fine-scale (sub-kilometre) roughness critical for modelling ice flow \citep[see e.g.][]{HubbardSpectralroughnessglaciated2000,SiegertMacroscalebedroughness2004,BinghamDiverselandscapesPine2017,FalciniQuantifyingbedroughness2018}
-
-One way to improve on smooth bed topographies is by using deep learning \citep[see][for a review]{GoodfellowDeeplearning2016}.
-Specifically, training a neural network on areas with high resolution datasets, and using it to predict what a high resolution topography would look like in areas with little to no direct observations \citep[Chp.~\ref{ch:2},][]{LeongDeepBedMapdeepneural2020}.
-Our deep learning method has similarities with inverse methods \citep{GudmundssonInverseMethodsGlaciology2011}, whereby knowing ice surface elevation, velocity, surface accummulation, and other surface observations in detail allows us to infer what the bed topography might be like.
-In contrast to inverse methods, we introduced a specific adversarial loss function \citep{GoodfellowGenerativeAdversarialNetworks2014} that penalizes overtly smooth topography, pushing bed predictions towards that of realistic groundtruth surfaces.
-
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=1.0\textwidth]{chp1_fig_universal_glacier_slip_law.jpg}
-  \caption[Universal glacier slip law]{
-    A universal glacier slip law spanning the spectrum of form drag and skin drag regimes.
-    Figure is from \citet{Minchewuniversalglacierslip2020}.
-    Reprinted with permission from AAAS.
-  }
-  \label{fig:1.3}
-\end{figure}
-
-With the DeepBedMap dataset, we then experiment how ice flow over a rough surface differs from ice flow over smooth topography (Chp.~\ref{ch:3}).
-Two beds are compared using a Full Stokes ice flow model - a full physical treatment of how an ice stream flows, including the three-dimensional driving forces and stresses that govern the behaviour of an ice body \citep{LarourContinentalscalehigh2012}.
-% In addition, we also analyze how water may flow differently over a rough versus smooth topography, whether that has any effect on hydropotential gradients, which may influence basal water pressure at the base of ice streams and thus change ice flow.
-% This is crucial to get right, as whether water flows as a concentrated stream in a channel or as a distributed network has a major impact on the ice flowing above it.
-One outcome of this exercise is to measure the basal traction of an ice stream, separable into form drag and skin drag \citep[Fig.~\ref{fig:1.3},][]{BinghamDiverselandscapesPine2017,Kyrke-SmithRelevanceDetailBasal2018,Minchewuniversalglacierslip2020,SchoofBasalperturbationsice2002}.
-Form drag is basal drag due to topography \citep[c.f.][]{WeertmanSlidingGlaciers1957}, a component which typically increases with higher resolution topography.
-Skin drag is the frictional force occurring at the ice-rock interface, determined by bed material properties, and significantly influenced by water that acts to decrease friction \citep{IversonExperimentsdynamicssedimentary2015}.
-Skin drag may be overestimated in comparison to form drag on glaciers such as Pine Island Glacier \citep{BinghamDiverselandscapesPine2017,Kyrke-SmithRelevanceDetailBasal2018}, and this detail is of particular relevance when modelling vulnerable glaciers in the Amundsen sea sector \citep{Kyrke-SmithRelevanceDetailBasal2018}.
-% TODO explain or throw out. Moreover, it beckons the question on whether basal inversion have been correctly applied to other regions in Antarctica.
-
-% Basal traction itself is normally an inferred property of the bed, and is a standard product produced by ice sheet models where given an ice surface elevation with a known velocity, as well as a bed elevation, we can invert for what basal traction is necessary to produce a desired velocity.
-% What is hard to separate out, is the true contribution or division of form drag and skin drag into the basal traction parameter.
-
-Regardless of the nature of subglacial topography, water remains important in determining ice flow.
-Water beneath an ice sheet is dynamic, and has been shown to affect the speed of mountain glaciers \citep[e.g.][]{IkenUpliftUnteraargletscherBeginning1983}, and that of outlet glaciers in Greenland where surface water has the ability to access the bed via moulins \citep{ZwallySurfaceMeltInducedAcceleration2002}.
-While no active moulins are known to be present in the interior regions of West and East Antarctica \citep{DirscherlAutomatedMappingAntarctic2020,StokesWidespreaddistributionsupraglacial2019}, there is still a considerable volume of water trapped in subglacial lakes \citep{WrightfourthinventoryAntarctic2012}.
-Many of these subglacial lakes are active and have drained and filled over the satellite era \citep[Fig.~\ref{fig:1.4},][]{Smithinventoryactivesubglacial2009,SiegfriedThirteenyearssubglacial2018}, including some that were associated with a temporary speed-ups of ice flow \citep[e.g.][]{Scambostriggeringsubglaciallake2011,BellLargesubglaciallakes2007,StearnsIncreasedflowspeed2008,WrightSubglacialhydrologicalconnectivity2014}.
-
-\begin{figure}[htb]
-  \centering
-  \begin{subfigure}[t]{1.0\textwidth}
-    % TODO get higher resolution image from https://doi.org/10.1017/aog.2017.36 somehow
-    \includegraphics[width=1.0\textwidth]{chp1_fig_siegfried_fricker_subglacial_lakes.jpg}
-    \label{fig:1.4a}
-  \end{subfigure}
-  % \vfill
-  % \begin{subfigure}[t]{0.8\textwidth}
-  %   \includegraphics[width=1.0\textwidth]{chp1_fig_west_antarctica_icesat2_lakes}
-  %   \label{fig:1.4b}
-  % \end{subfigure}
-  \caption[Map of radio-echo sounding and satellite-detected subglacial lakes in Antarctica]{
-    Subglacial lakes over Antarctica as detected by satellite and airborne sensors.
-    Active subglacial lakes as detected by different satellite sensors are represented by different coloured blobs (blue, light blue and purple).
-    Radio-echo sounding (RES) detected subglacial lakes are shown as red blobs.
-    % Top panel shows those detected by Cryosat-2 radar altimetry.
-    Figure is from \citet{SiegfriedThirteenyearssubglacial2018}.
-    % TODO \ref{chp:4}
-    % Bottom panel shows those detected by ICESat-2 laser altimetry.
-    % Red polygons indicate draining lakes, while blue polygons are filling lakes.
-    % Period of subglacial lake activity is from 2018-10-14 to 2020-07-16.
-    % Plotted using Antarctic Stereographic Projection (EPSG:3031).
-  }
-  \label{fig:1.4}
-\end{figure}
-
-% Going back to our thesis statement, we need to figure out whether the sensitivity of the Antarctic ice sheet is due to this dynamic water field (skin drag), or if knowing the bed topography (form drag) to a higher resolution itself is sufficient.
-% While the study of these two components are not mutually exclusive, and may perhaps be geographically dependent, it is important to be aware of both of them.
-% One cannot assume that water in itself is a control on ice flow via sliding (though with subglacial water of sufficient thickness, this may be the case).
-% Neither can one assume that a suitably rough bed topography is enough to hold back an ice sheet without an understanding of how water can change the equations in a short time period.
-
-The subglacial hydrological system of Antarctica is very dynamic, and effort is needed to model and account for how subglacial water weakens subglacial till and induce faster sliding.
-The Subglacial Hydrology Model Intercomparison Project \citep[SHMIP;][]{DeFleurianSHMIPsubglacialhydrology2018} subjected a land terminating ice sheet to different subglacial hydrological schemes and forcing cycles (steady state, diurnal and seasonal), looking at how effective pressure (ice overburden pressure minus subglacial water pressure) and discharge volumes were affected.
-SHMIP found that complex 2-D models which include the physics of drainage systems were needed to model dynamic short term (e.g. diurnal) cycles, while simpler 0-D or 1-D models may suffice for less dynamic scenarios like those in steady state or happening on annual timescales.
-In Chapter \ref{ch:4}, our findings of rapid, sub-annual transmission of subglacial water across a connected subglacial lake system suggests that 2-D models are therefore needed.
-Our understanding of subglacial hydrology is still inadequate as mentioned in recent model intercomparisons \citep[ISMIP6; ][]{SeroussiISMIP6Antarcticamultimodel2020}, and research will need to focus on coupling subglacial hydrology models with ice sheet models \citep[e.g.][]{SommersSHAKTISubglacialHydrology2018,Smith-Johnsenrolesubglacialhydrology2020} to examine the influence of distributed vs channelized flow on ice dynamics.
-
-One takeaway from this thesis is the need to efficiently integrate data and methods from various fields working on Antarctic glaciology.
-In order to inform our understanding of future ice sheet behaviour for sea level rise projections, it is crucial to make full and efficient use of the growing volume of remote sensing and field collected data in our ice sheet models.
-The novel machine learning and automated remote sensing methods we introduce present an exciting path forward over existing classical methods, by enabling for the efficient ingestion and merging of diverse datasets.
-The bed of Antarctica may remain out of reach for the most part, but one can hope that the increasing synergy between data collectors and modellers will continue to improve our understanding of the Antarctic bed.
-
-% TODO Use motivation at https://www.cambridge.org/core/journals/journal-of-glaciology/article/antarctic-ice-sheet-response-to-sudden-and-sustained-iceshelf-collapse-abumip/C08970BDF95EA737AD941D3690EBB3C5/core-reader#sec5-1-4.
-% ``A major uncertainty remains in the physical understanding and modelling of subglacial till mechanics that are essential for determining the effective pressure and sliding rate at the base of a marine ice sheet. The few studies that have attempted to tackle this problem (e.g. Bueler and van Pelt, 2015; Gladstone and others, 2017) are based on seminal work by Tulaczyk and others (2000a, 2000b), but it is clear that more research in subglacial hydrology and basal mechanics of marine ice sheets is needed.''
+The code for creating the figures in the remainder of this thesis, and the latex files of the thesis itself are available at the following GitHub repository; \url{https://github.com/mdtanker/phdthesis} and is citable with the following DOI; \url{https://doi.org/10.5281/zenodo.8084606}.
